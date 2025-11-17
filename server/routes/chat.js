@@ -25,13 +25,30 @@ router.get("/thread", async (req, res, next) => {
   }
 });
 
-router.get("thread/:id",(req,res)=>{
-    const {id} = req.params;
+router.get("/thread/:threadId",async (req,res)=>{
+    const {threadId} = req.params;
     try{
-        const chat = Thread.find({_id:`${id}`})
+        const chat = await Thread.findOne({threadId});
+        if(!chat){
+          res.status(404).json({error:"chat not found"});
+        }
+        res.json(chat);
     }catch(err){
         res.status(500).json({error:"failed"})
     }
 })
 
+router.delete("/thread/:threadId",async(req,res)=>{
+  const {threadId} = req.params;  
+  try{
+    const result = await Thread.deleteOne({threadId});
+    if(!result){
+      res.json("failed");
+    }
+    console.log(result.message);
+  }catch(err){
+    console.log(err)
+    res.status(500).json({error:err});
+  }
+})
 export default router;
