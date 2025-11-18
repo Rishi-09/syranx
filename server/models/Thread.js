@@ -38,7 +38,6 @@ const ThreadSchema = new Schema({
   },
 });
 
+let Message = mongoose.model("Message", MessageSchema);
+export default  mongoose.model("Thread", ThreadSchema);
 
-
-
-export default mongoose.model("Thread",ThreadSchema);
