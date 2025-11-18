@@ -28,8 +28,7 @@ connectDB();
 
 app.use("/api",chatRoutes);
 
-let aireply = await getResponse("hii");
-console.log(aireply);
+
 app.listen(port, () => {
   console.log(`listening on port localhost:${port} with cors`);
   
