@@ -66,14 +66,13 @@ router.post("/chat", async (req, res) => {
         message: [{ role: "user", content: message }],
       });
     }else{
-      thread.message.push({ role: "user", content: message})
+      thread.message.push({ role: "user", content: message});
     }
-    let aiResponse = await getResponse(message); //response of ai
+    let aiResponse = await getResponse(message);
     thread.message.push({ role: "assistant", content: aiResponse})
-    thread.updatedAt = new Date();
     let result = await thread.save();
     console.log(result);
-    res.json(aiResponse);
+    res.json(result);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to load response!" });
