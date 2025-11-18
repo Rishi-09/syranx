@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
-import Thread from "../models/Thread.js";
+import  Thread  from "../models/Thread.js";
+import getResponse from "../utils/groqClients.js";
 
 router.post("/test", async (req, res) => {
   try {
@@ -25,30 +26,57 @@ router.get("/thread", async (req, res, next) => {
   }
 });
 
-router.get("/thread/:threadId",async (req,res)=>{
-    const {threadId} = req.params;
-    try{
-        const chat = await Thread.findOne({threadId});
-        if(!chat){
-          res.status(404).json({error:"chat not found"});
-        }
-        res.json(chat);
-    }catch(err){
-        res.status(500).json({error:"failed"})
+router.get("/thread/:threadId", async (req, res) => {
+  const { threadId } = req.params;
+  try {
+    const chat = await Thread.findOne({ threadId });
+    if (!chat) {
+      res.status(404).json({ error: "chat not found" });
     }
-})
+    res.json(chat);
+  } catch (err) {
+    res.status(500).json({ error: "failed" });
+  }
+});
 
-router.delete("/thread/:threadId",async(req,res)=>{
-  const {threadId} = req.params;  
-  try{
-    const result = await Thread.deleteOne({threadId});
-    if(!result){
+router.delete("/thread/:threadId", async (req, res) => {
+  const { threadId } = req.params;
+  try {
+    const result = await Thread.deleteOne({ threadId });
+    if (!result) {
       res.json("failed");
     }
     console.log(result.message);
-  }catch(err){
-    console.log(err)
-    res.status(500).json({error:err});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
   }
-})
+});
+router.post("/chat", async (req, res) => {
+  let { threadId, message } = req.body;
+  if (!threadId || !message) {
+    res.status(400).json({ error: "Missing required fields" });
+  }
+  try {
+    let thread = await Thread.findOne({ threadId });
+    if (!thread) {
+      thread = new Thread({
+        title: message,
+        threadId,
+        message: [{ role: "user", content: message }],
+      });
+    }else{
+      thread.message.push({ role: "user", content: message})
+    }
+    let aiResponse = await getResponse(message); //response of ai
+    thread.message.push({ role: "assistant", content: aiResponse})
+    thread.updatedAt = new Date();
+    let result = await thread.save();
+    console.log(result);
+    res.json(aiResponse);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to load response!" });
+  }
+});
 export default router;
