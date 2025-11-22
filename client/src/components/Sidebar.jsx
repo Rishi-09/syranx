@@ -3,7 +3,7 @@ import React from "react";
 const Sidebar = () => {
   return (
     <>
-      <section className="h-screen w-56 bg-neutral-800  ">
+      <section className=" w-60 bg-neutral-800  ">
         {/*new chat section */}
         <div className=" flex border border-zinc-400/30 mt-2 m-1 rounded-md">
           <i className="fa-solid fa-chess-queen mt-2.5 ml-4  mb-1  "></i>
@@ -11,8 +11,7 @@ const Sidebar = () => {
         </div>
         <div className="mt-6 mb-3" >
           <a className="hover:bg-amber-100/10   pt-2 m-3 pr-10  pl-3 pb-2  rounded-md transition-all duration-200 " href="#" >
-          {/* <i class="fa-regular fa-pen-to-square" style="color: #ffffff;"></i> */}
-          <i class="fa-regular fa-pen-to-square mr-5"></i>
+          <i className="fa-regular fa-pen-to-square mr-5"></i>
           New Chat
         </a>
         </div>
@@ -33,7 +32,9 @@ const Sidebar = () => {
         </ul>
         
         <hr className="opacity-10 mt-5" />
-        <div className="p-5 absolute bottom-0 ">By Rishi</div>
+        <div className="absolute bottom-0">
+                  <p className="relative left-10 m-4 " >By Rishi</p>
+        </div>
       </section>
     </>
   );
