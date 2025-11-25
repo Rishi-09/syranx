@@ -1,6 +1,7 @@
 import React, { useContext,useState } from "react";
 import { Mycontext } from "./Mycontext";
 import {BarLoader} from 'react-spinners';
+import Chat from "./Chat";
 const Chatwindow = () => {
   const { prompt, setPrompt, reply, setReply, currThreadId, setcurrThreadId } =
     useContext(Mycontext);
@@ -31,13 +32,16 @@ const Chatwindow = () => {
   };
 
   return (
-    <section className=" h-screen bg-neutral-900 w-screen  ">
-      <div className="absolute right-0">
+    <section className=" h-screen bg-neutral-900 w-screen flex justify-center items-center ">
+      <div className="absolute right-0 top-0">
         <i className="fa-solid fa-circle-user text-2xl m-4"></i>
       </div>
-      
+      <div className="absolute w-2/3 h-5/6 bottom-24 rounded-4xl " >
+        <Chat />
+        <BarLoader color="#fff" className="m-4 " loading={loading} ></BarLoader>
+      </div>
       <div className="flex justify-center">
-        <BarLoader color="#fff" className="" loading={loading} ></BarLoader>
+        
         <input
           type="text"
           name=""
