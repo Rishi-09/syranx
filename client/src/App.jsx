@@ -9,6 +9,7 @@ const App = () => {
   let [currThreadId, setcurrThreadId] = useState(uuid());
   let [prevChats, setPrevChats] = useState([]);
   let [newChat, setNewChat] = useState(true);
+  let [allThreads,setAllThreads] = useState([]);
 
   const providerValues = {
     prompt,
@@ -21,6 +22,8 @@ const App = () => {
     setPrevChats,
     newChat,
     setNewChat,
+    allThreads,
+    setAllThreads
   };
   return (
     <div className="main flex ">
