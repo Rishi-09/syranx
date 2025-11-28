@@ -54,7 +54,7 @@ const Chat = () => {
               <div className="max-w-5/6  justify-start m-4" key={"typing"} >
               <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                   {latestReply}
-                </ReactMarkdown>
+              </ReactMarkdown>
             </div>
             }
       </div>
