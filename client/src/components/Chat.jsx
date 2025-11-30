@@ -5,9 +5,13 @@ import rehypeHighlight from "rehype-highlight";
 import './Chat.css'
 import "highlight.js/styles/github-dark.css";
 const Chat = () => {
-  let { prevChats, setPrevChats, newChat, setNewChat,reply } = useContext(Mycontext);
+  let { prevChats,reply } = useContext(Mycontext);
   let [ latestReply,setLatestReply ] = useState(null);
   useEffect(()=>{
+    if(reply===null){
+      setLatestReply(null);
+      return;
+    }
     if(!prevChats?.length) return;
     const content = reply.split(" ");
     let idx = 0;
@@ -37,11 +41,11 @@ const Chat = () => {
               </p>
             ) : (
               <div className="reply m-4 max-w-5/6 p-4 rounded-4xl">
-                <p className=" justify-start">
+                <div className=" justify-start">
                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}  >
                   {chat.content}
                 </ReactMarkdown>
-                </p>
+                </div>
               </div>
               
             )}
@@ -52,11 +56,19 @@ const Chat = () => {
         {
               prevChats.length>0 && latestReply!==null &&
               <div className="max-w-5/6  justify-start m-4" key={"typing"} >
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                  {latestReply}
-              </ReactMarkdown>
-            </div>
-            }
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                    {latestReply}
+                </ReactMarkdown>
+             </div>
+        }
+        {
+              prevChats.length>0 && latestReply===null &&
+              <div className="max-w-5/6  justify-start m-4" key={"typing"} >
+                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                    {prevChats[prevChats.length-1].content}
+                </ReactMarkdown>
+             </div>
+        }
       </div>
     </>
   );
