@@ -2,9 +2,19 @@ import React from "react";
 import { useEffect, useContext } from "react";
 import { Mycontext } from "./Mycontext";
 import { v1 as uuid } from "uuid";
+import "./Sidebar.css";
 
 function Sidebar() {
-  let { allThreads, setAllThreads, currThreadId,setCurrThreadId ,setNewChat,setPrevChats,setPrompt,setReply} = useContext(Mycontext);
+  let {
+    allThreads,
+    setAllThreads,
+    currThreadId,
+    setCurrThreadId,
+    setNewChat,
+    setPrevChats,
+    setPrompt,
+    setReply,
+  } = useContext(Mycontext);
 
   const getAllThreads = async () => {
     try {
@@ -21,28 +31,63 @@ function Sidebar() {
     }
   };
 
-  const createNewChat = async () =>{
+  const changeThread = async (threadId) => {
+   
+    setNewChat(false);
+    setReply(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/thread/${threadId}`
+      );
+      const res = await response.json();
+      // console.log(res.message);
+      setPrevChats(res.message || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+    useEffect(() => {
+    getAllThreads();
+  }, []);
+  const createNewChat = async () => {
     setNewChat(true);
     setReply(null);
     setPrompt("");
     setPrevChats([]);
     setCurrThreadId(uuid());
+  };
 
-  }
 
-  useEffect(() => {
-    getAllThreads();
-  }, [currThreadId]);
-  console.log(allThreads);
+  const deleteThread = async (threadId) => {
+    console.log("deleting thread");
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/thread/${threadId}`,
+        { method: "DELETE" }
+      );
+      console.log("sent request");
+      const res = await response.json();
+      console.log(res);
+      setAllThreads((prev) =>
+        prev.filter((thread) => thread.threadId !== threadId)
+      );
+      if(threadId===currThreadId) {
+       createNewChat();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+console.log(currThreadId);
   return (
     <>
-      <section className=" w-84 bg-neutral-800 h-screen overflow-hidden   ">
+      <section className=" w-84 bg-neutral-800 h-screen overflow-hidden  lg:w-84 [1024px]:w-48 custom-710 relative">
         {/*new chat section */}
         <div className=" flex justify-around border border-zinc-400/30 rounded-md">
           <i className="fa-solid fa-chess-queen mt-5"></i>
           <p>syranx</p>
         </div>
-
 
         <div className="h-5/6 overflow-y-scroll overflow-x-hidden custom-scrollbar  ">
           <div className="">
@@ -51,22 +96,28 @@ function Sidebar() {
               className="hover:bg-amber-100/10 w-11/12 pt-2 mr-3 ml-3 mt-1 mb-1 pr-10  pl-3 pb-2  rounded-md transition-all duration-200  "
             >
               <i className="fa-regular fa-pen-to-square mr-5"></i>
-              <p className="inline" >New Chat</p>
+              <p className="inline">New Chat</p>
             </button>
           </div>
 
-
           <hr className="opacity-10 " />
-          <div className="p-0.5">
-            <ul>
+          <div className="p-0.5 relative">
+            <ul className="">
               {allThreads?.map((thread) => (
-                <li className="w-11/12 list-item p-1.5 ml-2 hover:bg-amber-100/10 rounded-lg transition-all duration-200 " key={thread.threadId}>
-                  <a
-                    href="#"
-                    className="m-4"
-                  >
-                    {thread.title.length < 10 ? thread.title : "Chat"}
-                  </a>
+                <li
+                  className="w-11/12  p-1.5 ml-2 hover:bg-amber-100/10 rounded-lg transition-all duration-200 thread "
+                  key={thread.threadId}
+                  onClick={() => changeThread(thread.threadId)}
+                >
+                  {thread.title.length < 20 ? thread.title : "Chat"}
+                  <i
+                    className="fa-solid fa-trash absolute mt-1  right-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteThread(thread.threadId);
+                      
+                    }}
+                  ></i>
                 </li>
               ))}
             </ul>

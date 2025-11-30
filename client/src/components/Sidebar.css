@@ -1,0 +1,30 @@
+@media (max-width: 710px) {
+  .custom-710 {
+    /* your styles here */
+    display:none;
+    font-size: 2rem;
+  }
+  .custom-send-icon {
+    /* your styles here */
+    position:absolute;
+    right:0;
+  }
+  .custom-input-section{
+    width: 90vw;
+    margin: 0;
+    padding: 0;
+  }
+}
+.fa-trash{
+  opacity:0;
+
+}
+.fa-trash:hover{
+  color: red;
+}
+.thread{
+  transition:opacity ease-in-out 0.2s;
+}
+.thread:hover .fa-trash{
+  opacity: 1;
+}
