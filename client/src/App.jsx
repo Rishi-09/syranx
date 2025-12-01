@@ -6,10 +6,10 @@ import { v1 as uuid } from "uuid";
 const App = () => {
   let [prompt, setPrompt] = useState("");
   let [reply, setReply] = useState(null);
-  let [currThreadId, setcurrThreadId] = useState(uuid());
+  let [currThreadId, setCurrThreadId] = useState(uuid());
   let [prevChats, setPrevChats] = useState([]);
   let [newChat, setNewChat] = useState(true);
-  let [allThreads,setAllThreads] = useState([]);
+  let [allThreads, setAllThreads] = useState([]);
 
   const providerValues = {
     prompt,
@@ -17,13 +17,13 @@ const App = () => {
     reply,
     setReply,
     currThreadId,
-    setcurrThreadId,
+    setCurrThreadId,
     prevChats,
     setPrevChats,
     newChat,
     setNewChat,
     allThreads,
-    setAllThreads
+    setAllThreads,
   };
   return (
     <div className="main flex ">
