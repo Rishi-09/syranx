@@ -32,7 +32,6 @@ function Sidebar() {
   };
 
   const changeThread = async (threadId) => {
-   
     setNewChat(false);
     setReply(null);
     try {
@@ -40,16 +39,13 @@ function Sidebar() {
         `http://localhost:8080/api/thread/${threadId}`
       );
       const res = await response.json();
-      // console.log(res.message);
       setPrevChats(res.message || []);
+      setCurrThreadId(threadId);
     } catch (err) {
       console.log(err);
     }
   };
 
-    useEffect(() => {
-    getAllThreads();
-  }, []);
   const createNewChat = async () => {
     setNewChat(true);
     setReply(null);
@@ -58,28 +54,31 @@ function Sidebar() {
     setCurrThreadId(uuid());
   };
 
-
   const deleteThread = async (threadId) => {
-    console.log("deleting thread");
     try {
       const response = await fetch(
         `http://localhost:8080/api/thread/${threadId}`,
         { method: "DELETE" }
       );
-      console.log("sent request");
       const res = await response.json();
       console.log(res);
+      console.log("thread id" + threadId);
+      console.log("current thread id" + currThreadId);
+      if (threadId === currThreadId) {
+        createNewChat();
+      }
       setAllThreads((prev) =>
         prev.filter((thread) => thread.threadId !== threadId)
       );
-      if(threadId===currThreadId) {
-       createNewChat();
-      }
     } catch (err) {
       console.log(err);
     }
   };
-console.log(currThreadId);
+
+  useEffect(() => {
+    getAllThreads();
+  }, [currThreadId]);
+
   return (
     <>
       <section className=" w-84 bg-neutral-800 h-screen overflow-hidden  lg:w-84 [1024px]:w-48 custom-710 relative">
@@ -113,9 +112,9 @@ console.log(currThreadId);
                   <i
                     className="fa-solid fa-trash absolute mt-1  right-8"
                     onClick={(e) => {
+                      console.log("to be deleted:" + thread.threadId);
                       e.stopPropagation();
                       deleteThread(thread.threadId);
-                      
                     }}
                   ></i>
                 </li>
