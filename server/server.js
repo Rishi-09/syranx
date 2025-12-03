@@ -4,6 +4,7 @@ import getResponse from "./utils/groqClients.js";
 import mongoose from "mongoose";
 import 'dotenv/config';
 import chatRoutes from './routes/chat.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
 const port = 8080;
@@ -25,7 +26,7 @@ app.use(
 );
 app.use(express.json());
 connectDB();
-
+app.use("/api",authRoutes);
 app.use("/api",chatRoutes);
 
 
