@@ -4,14 +4,6 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-router.get("/signup", (req, res) => {
-  try {
-    res.send(true);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "failed loading signUp form" });
-  }
-});
 
 router.post("/signup", (req, res) => {
   try {
@@ -31,13 +23,6 @@ router.post("/signup", (req, res) => {
   }
 });
 
-router.get("/login", (req, res) => {
-  try {
-    res.status(200).send("login form:" + true);
-  } catch (err) {
-    res.status(500).json({ error: "failed fetching form" });
-  }
-});
 
 router.post("/login",async (req, res) => {
   try {
@@ -47,7 +32,7 @@ router.post("/login",async (req, res) => {
     bcrypt.compare( req.body.password,user.password,(err,result)=>{
         if(!result) res.send(" login failed! ");
         console.log("login successfull");
-        res.status(200).json("login successfull");
+        res.status(200).send(user);
     })
   } catch (err) {
     res.status(500).json({ error: "failed fetching form" });

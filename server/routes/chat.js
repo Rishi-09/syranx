@@ -19,7 +19,7 @@ router.post("/test", async (req, res) => {
 
 router.get("/thread", async (req, res, next) => {
   try {
-    const threads = await Thread.find({}).sort({ updatedAt: -1 });
+    const threads = await Thread.find({}).sort({ updatedAt: -1 }).populate("User");
     res.json(threads);
   } catch (err) {
     res.status(500).json({ error: "failed to load chats" });
