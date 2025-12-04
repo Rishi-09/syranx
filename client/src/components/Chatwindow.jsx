@@ -16,6 +16,8 @@ const Chatwindow = () => {
     setNewChat,
   } = useContext(Mycontext);
 
+  let [showDropDown,setShowDropDown] = useState(true);
+  
   let [loading, setloading] = useState(false);
   const getReply = async () => {
     setloading(true);
@@ -113,9 +115,19 @@ const Chatwindow = () => {
       ) : (
         ""
       )}
-      <div className="absolute right-0 top-0">
-        <i className="fa-solid fa-circle-user text-2xl m-4"></i>
+      <div className="absolute right-5 top-0 hover:bg-amber-50/20 rounded-xl p-0 " onClick={()=> {
+        setShowDropDown(showDropDown?false:true)
+      } } >
+        <i className="fa-solid fa-circle-user p-0  text-2xl m-2"></i>
       </div>
+      { 
+        showDropDown && 
+        <ul className="dropdown-items w-30 absolute bg-amber-50/10 rounded-2xl m-4 right-0 top-10 mask-linear-to-stone-50 ">
+          <div className="item p-2 m-2 mt-0 mb-0 w-30 relative right-2 hover:bg-amber-50/20 object-cover ">login </div>
+          <div className="item p-2 m-2 mt-0 mb-0 w-30 relative right-2 hover:bg-amber-50/20 object-cover ">SignUp</div>
+          <div className="item p-2 m-2 mt-0 mb-0 w-30 relative right-2 hover:bg-amber-50/20 object-cover ">setting</div>
+        </ul>
+      }
       <div
         ref={chatContainerRef}
         className="absolute w-2/3 h-10/12 bottom-24  overflow-y-scroll  [&::-webkit-scrollbar]:hidden custom-w [-ms-overflow-style:none] [scrollbar-width:none]  "
