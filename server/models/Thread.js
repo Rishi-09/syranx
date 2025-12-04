@@ -36,6 +36,10 @@ const ThreadSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  owner:{
+    type:Schema.Types.ObjectId,
+    ref:"User"
+  }
 });
 
 let Message = mongoose.model("Message", MessageSchema);
