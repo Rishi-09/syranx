@@ -3,10 +3,11 @@ import Sidebar from "./components/Sidebar";
 import Chatwindow from "./components/Chatwindow";
 import Signup from "./pages/Signup";   
 import Login from "./pages/Login";   
+import { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import { Mycontext } from "./components/Mycontext";
 import { v1 as uuid } from "uuid";
+import { AuthContext } from "./context/Authcontext";
 
 const App = () => {
   let [prompt, setPrompt] = useState("");
@@ -15,8 +16,7 @@ const App = () => {
   let [prevChats, setPrevChats] = useState([]);
   let [newChat, setNewChat] = useState(true);
   let [allThreads, setAllThreads] = useState([]);
-  let [user,setUser] = useState(null);
-
+  let {user,setUser} = useContext(AuthContext);
   const providerValues = {
     prompt,
     setPrompt,

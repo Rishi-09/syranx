@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mycontext } from "./Mycontext";
 
 export default function Dropdown() {
-  const { user } = useContext(Mycontext);
+  const { user, setUser } = useContext(Mycontext);
   let [showDropDown, setShowDropDown] = useState(true);
   const navigate = useNavigate();
   const signup = async () => {
@@ -23,10 +23,12 @@ export default function Dropdown() {
   }
   
     
-  const logout = async()=>{
+  const logout = ()=>{
     try{
-      let res = await fetch("http://localhost:8080/api/logout",{method:"POST"});
-      console.log(res);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
+      navigate("/login");
     }catch(err){
       console.log(err);
     }
@@ -34,15 +36,15 @@ export default function Dropdown() {
   return (
     <>
       <div
-        className="absolute right-5 top-0 hover:bg-amber-50/20 rounded-xl p-0 "
+        className="absolute right-5 top-10 hover:bg-amber-50/20 rounded-xl p-0 "
         onClick={() => {
           setShowDropDown(showDropDown ? false : true);
         }}
       >
-        <i className="fa-solid fa-circle-user p-0  text-2xl m-2"></i>
+        <i className="fa-solid fa-circle-user p-0  text-2xl z-9999 m-2"></i>
       </div>
       {showDropDown && (
-        <ul className="dropdown-items w-38 z-9999 absolute bg-amber-50/10 rounded-2xl m-4 right-0 top-10 mask-linear-to-stone-50 ">
+        <ul className="dropdown-items w-38 z-9999 absolute bg-amber-50/10 rounded-2xl m-4 right-0 top-20 mask-linear-to-stone-50 ">
           {user ? (
             <li className="p-2 hover:bg-amber-50/20" onClick={() => {logout()}}>
               LogOut

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-
+import api from '../api.js'
 import { Mycontext } from "./Mycontext";
 import { BarLoader } from "react-spinners";
 import Chat from "./Chat";
@@ -27,20 +27,14 @@ const Chatwindow = () => {
     setloading(true);
     setNewChat(false);
     console.log("message", prompt, "\nthread id:" + currThreadId);
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+
+    try {
+      let response = await api.post("/chat", {
         message: prompt,
         threadId: currThreadId,
-      }),
-    };
-    try {
-      let response = await fetch("http://localhost:8080/api/chat", options);
-      let result = await response.json();
-      let latest = result.message[result.message.length - 1];
+      });
+      console.log(response.data);
+      let latest = response.data.message[response.data.message.length - 1];
       console.log("reply:" + latest.content);
       console.log("type of reply:" + typeof latest.content);
       setReply(latest.content);
@@ -114,7 +108,7 @@ const Chatwindow = () => {
 
       {newChat ? (
         <div>
-          <h1 className="font-bold text-4xl ">Start New Chat</h1>
+          <h1 className="font-bold text-4xl custom-size ">Start New Chat</h1>
         </div>
       ) : (
         ""

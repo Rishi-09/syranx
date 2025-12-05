@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { useContext } from "react";
-import { Mycontext } from "../components/Mycontext";
 import { useNavigate } from "react-router-dom";
+import api from '../api.js'
+import { useContext } from "react";
+import { Mycontext } from "../components/Mycontext.jsx";
 
 function Signup() {
-  const { setUser } = useContext(Mycontext);
+
+  let {setUser} = useContext(Mycontext);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     userName: "",
@@ -14,19 +17,13 @@ function Signup() {
 
   
 
-  const handleSubmit = async (e) => {
+  const signup = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await fetch("http://localhost:8080/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      console.log(data);
-      setUser(data);
+      let res = await api.post("/signup",formData);
+      // console.log(res.data);
+      setUser(res.data)
+      alert("Signed In , please log in");
       navigate("/");
     } catch (err) {
       console.log(err);
@@ -35,10 +32,10 @@ function Signup() {
 
   return (
     <>
-      <div className="main absolute w-screen h-screen bg-neutral-900/90 flex justify-center items-center">
+      <div className="main w-screen h-screen flex bg-neutral-900 justify-center items-center">
         <form
-          onSubmit={handleSubmit}
-          className="grid bg-amber-50/20 p-10 rounded-2xl"
+          onSubmit={signup}
+          className="w-100 grid bg-amber-50/30 rounded-2xl p-10"
         >
           <div className="relative -right-5 -top-5 ">
             <button
@@ -86,7 +83,7 @@ function Signup() {
           >
             Signup
           </button>
-          <p className=" justify-self-center hover:underline " onClick={()=>navigate("/login")} >new user?, register instead</p>
+          <p className=" justify-self-center hover:underline " onClick={()=>navigate("/login")} >already a user ? Log in</p>
         </form>
       </div>
     </>
