@@ -1,84 +1,85 @@
 import express from "express";
-const router = express.Router();
-import  Thread  from "../models/Thread.js";
+import Thread from "../models/Thread.js";
 import getResponse from "../utils/groqClients.js";
+import { auth } from "../middlewares/auth.js";
 
-router.post("/test", async (req, res) => {
-  try {
-    const thread = new Thread({
-      threadId: "abc1234",
-      title: "testing database again",
-    });
-    const result = await thread.save();
-    res.send(result);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "failed push!" });
-  }
-});
+const router = express.Router();
 
-router.get("/thread", async (req, res, next) => {
+router.get("/thread", auth, async (req, res) => {
+  
   try {
-    const threads = await Thread.find({}).sort({ updatedAt: -1 }).populate("User");
+    const threads = await Thread.find({ owner: req.user._id })
+      .sort({ updatedAt: -1 })
+      .populate("owner", "userName email");
+
     res.json(threads);
   } catch (err) {
-    res.status(500).json({ error: "failed to load chats" });
+    res.status(500).json({ error: "Failed to load threads" });
   }
 });
 
-router.get("/thread/:threadId", async (req, res) => {
-  const { threadId } = req.params;
+router.get("/thread/:threadId", auth, async (req, res) => {
   try {
-    const chat = await Thread.findOne({ threadId });
-    if (!chat) {
-      res.status(404).json({ error: "chat not found" });
-    }
-    res.json(chat);
+    const thread = await Thread.findOne({
+      threadId: req.params.threadId,
+      owner: req.user._id
+    });
+
+    if (!thread)
+      return res.status(404).json({ error: "Thread not found" });
+
+    res.json(thread);
   } catch (err) {
-    res.status(500).json({ error: "failed" });
+    res.status(500).json({ error: "Failed" });
   }
 });
 
-router.delete("/thread/:threadId", async (req, res) => {
-  const { threadId } = req.params;
-  try {
-    const result = await Thread.deleteOne({ threadId });
-    if (!result) {
-      res.json("failed");
-    }
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "Thread not found" });
-    }
-    res.json("Thread Deleted Successfully :",result);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err });
-  }
-});
-router.post("/chat", async (req, res) => {
+router.post("/chat", auth, async (req, res) => {
   let { threadId, message } = req.body;
-  if (!threadId || !message) {
-    res.status(400).json({ error: "Missing required fields" });
-  }
+
+  if (!threadId || !message)
+    return res.status(400).json({ error: "Missing fields" });
+
   try {
-    let thread = await Thread.findOne({ threadId });
+    let thread = await Thread.findOne({ threadId, owner: req.user._id });
+
     if (!thread) {
       thread = new Thread({
-        title: message,
         threadId,
+        title: message,
+        owner: req.user._id,
         message: [{ role: "user", content: message }],
       });
-    }else{
-      thread.message.push({ role: "user", content: message});
+    } else {
+      thread.message.push({ role: "user", content: message });
     }
+
     let aiResponse = await getResponse(message);
-    thread.message.push({ role: "assistant", content: aiResponse})
-    let result = await thread.save();
-    console.log(result);
+    thread.message.push({ role: "assistant", content: aiResponse });
+
+    thread.updatedAt = Date.now();
+
+    const result = await thread.save();
     res.json(result);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Failed to load response!" });
+    res.status(500).json({ error: "Failed to chat" });
   }
 });
+
+router.delete("/thread/:threadId", auth, async (req, res) => {
+  try {
+    const result = await Thread.deleteOne({
+      threadId: req.params.threadId,
+      owner: req.user._id
+    });
+
+    if (result.deletedCount === 0)
+      return res.status(404).json({ message: "Thread not found" });
+
+    res.json({ message: "Thread deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed" });
+  }
+});
+
 export default router;
