@@ -1,53 +1,239 @@
-@media (max-width: 710px) {
-  .custom-710 {
-    /* your styles here */
-    display:none;
-    font-size: 2rem;
-  }
-  
-  .custom-input-section{
-    height: 2rem;
-    
-  }
-  .custom-w{
-    width: 97vw;
-    margin: 1em;
+/************************************
+  CHATGPT STYLE — SIDEBAR PANEL
+*************************************/
 
-  }
-  .custom-text{
-    font-size: 8px;
-  }
-  .custom-scroll{
-    position: absolute;
-    bottom: 24;
-  }
-  .custom-size{
-    font-size: 2rem;
-  }
-  .show-icon{
-    display:block;
-  }
+.chatgpt-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px; /* ChatGPT default width */
+  height: 100vh;
+  background: #1f1f1f;
+  border-right: 1px solid #3c3c3c;
+  padding: 1rem;
+  z-index: 9999;
+
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
 }
 
-@media (max-width:770px){
-  .custom-send-icon {
- 
-    position:absolute;
-    bottom: 25px;
-    right:0;
+.chatgpt-sidebar.show {
+  transform: translateX(0);
+}
+
+/* Desktop: always visible */
+@media (min-width: 900px) {
+  .chatgpt-sidebar {
+    transform: translateX(0);
+    position: relative;
+  }
+
+  .chatgpt-close-btn {
+    display: none;
+  }
+
+  .chatgpt-toggle-btn {
+    display: none;
   }
 }
-  
-.fa-trash{
-  opacity:0;
 
+/************************************
+    OVERLAY (BLUR BACKGROUND)
+*************************************/
+.chatgpt-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9990;
 }
-.fa-trash:hover{
-  color: red;
+
+/************************************
+    MOBILE TOGGLE BUTTON
+*************************************/
+.chatgpt-toggle-btn {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 1.2rem;
+  background: #111;
+  padding: 0.8rem 0.9rem;
+  border-radius: 50%;
+  z-index: 10000;
+  border: 1px solid #333;
 }
-.thread{
-  transition:opacity ease-in-out 0.2s;
+
+.chatgpt-toggle-btn i {
+  color: white;
 }
-.thread:hover .fa-trash{
+
+/************************************
+    HEADER + CLOSE BUTTON
+*************************************/
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-title {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.chatgpt-close-btn {
+  font-size: 1.4rem;
+  color: #ddd;
+  background: none;
+}
+
+/************************************
+    NEW CHAT BUTTON
+*************************************/
+.new-chat-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  background: #2d2d2d;
+  color: white;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.new-chat-btn:hover {
+  background: #3a3a3a;
+}
+
+/************************************
+    THREAD LIST
+*************************************/
+.thread-list {
+  margin-top: 1rem;
+  height: 70vh;
+  overflow-y: auto;
+}
+
+.thread-item {
+  padding: 0.55rem;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.thread-item:hover {
+  background: #2f2f2f;
+}
+
+.thread-title {
+  color: #ddd;
+  width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-icon {
+  opacity: 0;
+  color: #aaa;
+  transition: 0.2s;
+}
+
+.thread-item:hover .delete-icon {
   opacity: 1;
 }
+
+.delete-icon:hover {
+  color: rgb(255, 82, 82);
+}
+
+/************************************
+    FOOTER
+*************************************/
+.sidebar-footer {
+  position: absolute;
+  bottom: 10px;
+  font-size: 0.9rem;
+  color: #aaa;
+  width: 100%;
+  text-align: center;
+}
+
+
+/**************************************
+  CHATGPT MAIN CHAT PAGE LAYOUT
+***************************************/
+
+.chatgpt-chat-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.chatgpt-chat-container {
+  width: 100%;
+  max-width: 85vw;
+  height: calc(100vh - 150px);
+  margin-top: 90px;
+  overflow-y: scroll;
+  padding: 1rem;
+}
+
+.chatgpt-chat-container::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-btn {
+  position: fixed;
+  bottom: 130px;
+  right: 30px;
+  background: #1e1e1e;
+  padding: 12px 14px;
+  border-radius: 50%;
+  border: 1px solid #555;
+  z-index: 5000;
+}
+
+.chatgpt-input-wrapper {
+  position: fixed;
+  bottom: 25px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.chatgpt-input {
+  width: 60%;
+  max-width: 750px;
+  height: 60px;
+  padding: 15px;
+  background: #232323;
+  border-radius: 12px;
+  border: 1px solid #555;
+  color: white;
+  outline: none;
+}
+
+.chatgpt-send-btn {
+  margin-left: -55px;
+  background: none;
+  border: none;
+  color: #eee;
+  font-size: 22px;
+}
+
+.chatgpt-send-btn:hover {
+  color: white;
+}
+
+.chatgpt-footer {
+  position: fixed;
+  bottom: -10px;
+  width: 100%;
+  text-align: center;
+  opacity: 0.5;
+  font-size: 12px;
+}
+

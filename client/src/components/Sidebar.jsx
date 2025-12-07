@@ -1,13 +1,11 @@
-import React from "react";
-import { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Mycontext } from "./Mycontext";
 import { v1 as uuid } from "uuid";
+import api from "../api";
 import "./Sidebar.css";
-import api from "../api.js";
-import sidebarIcon from '../assets/sidebar-right-svgrepo-com.svg'
 
-function Sidebar() {
-  let {
+export default function Sidebar() {
+  const {
     allThreads,
     setAllThreads,
     currThreadId,
@@ -19,127 +17,127 @@ function Sidebar() {
     user,
   } = useContext(Mycontext);
 
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  // Fetch threads
   const getAllThreads = async () => {
     try {
-      const response = await api.get("/thread");
-
-      const filteredData = response.data.map((thread) => ({
-        threadId: thread.threadId,
-        title: thread.title,
-      }));
-
-      setAllThreads(filteredData);
+      const res = await api.get("/thread");
+      setAllThreads(res.data.map((t) => ({ threadId: t.threadId, title: t.title })));
     } catch (err) {
-      console.log("failed fetching threads", err);
-
-      // is not user -> user logout -> clear threads
-      if (err.response?.status === 401) {
-        setAllThreads([]);
-      }
+      if (err.response?.status === 401) setAllThreads([]);
     }
   };
 
-  const changeThread = async (threadId) => {
+  const changeThread = async (id) => {
     setNewChat(false);
     setReply(null);
-    try {
-      const response = await api.get(`/thread/${threadId}`);
 
-      setPrevChats(response.data.message || []);
-      setCurrThreadId(threadId);
+    try {
+      const res = await api.get(`/thread/${id}`);
+      setPrevChats(res.data.message || []);
+      setCurrThreadId(id);
+      setShowSidebar(false); // auto-close on phone like ChatGPT
     } catch (err) {
       console.log(err);
     }
   };
 
-  const createNewChat = async () => {
+  const createNewChat = () => {
     setNewChat(true);
     setReply(null);
     setPrompt("");
     setPrevChats([]);
     setCurrThreadId(uuid());
+    setShowSidebar(false);
   };
 
-  const deleteThread = async (threadId) => {
+  const deleteThread = async (id) => {
     try {
-      await api.delete(`thread/${threadId}`);
-      // console.log("thread id" + threadId);
-      // console.log("current thread id" + currThreadId);
-      if (threadId === currThreadId) {
-        createNewChat();
-      }
-      setAllThreads((prev) =>
-        prev.filter((thread) => thread.threadId !== threadId)
-      );
+      await api.delete(`/thread/${id}`);
+      if (id === currThreadId) createNewChat();
+      setAllThreads((prev) => prev.filter((t) => t.threadId !== id));
     } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
-    if (!user) {
-      setAllThreads([]);
-      return;
-    }
-    getAllThreads();
+    if (user) getAllThreads();
   }, [currThreadId, user]);
 
   return (
     <>
-      <button className="absolute left-3 top-10 bg-neutral-900 z-9999 hidden show-icon " > <img src={sidebarIcon} alt="" width="40px"/>  </button>
-      <section className=" w-84 bg-neutral-800 h-screen overflow-hidden  lg:w-84 [1024px]:w-48 custom-710 relative">
-        {/*new chat section */}
-        <div className=" flex justify-around border border-zinc-400/30 rounded-md">
-          <i className="fa-solid fa-chess-queen mt-5"></i>
-          <p>syranx</p>
+      {/* MOBILE TOGGLE BUTTON (ChatGPT style floating button) */}
+      <button
+        className="chatgpt-toggle-btn"
+        onClick={() => setShowSidebar(true)}
+      >
+        <i className="fa-solid fa-bars text-xl"></i>
+      </button>
+
+      {/* BLURRED OVERLAY */}
+      {showSidebar && (
+        <div className="chatgpt-sidebar-overlay" onClick={() => setShowSidebar(false)} />
+      )}
+
+      {/* SIDEBAR ITSELF */}
+      <aside className={`chatgpt-sidebar ${showSidebar ? "show" : ""}`}>
+        
+        {/* HEADER + CLOSE BUTTON */}
+        <div className="sidebar-header">
+          <h2 className="app-title">Syranx</h2>
+
+          {/* Close button only on mobile */}
+          <button
+            className="chatgpt-close-btn"
+            onClick={() => setShowSidebar(false)}
+          >
+            <i className="fa-solid fa-xmark"></i>
+          </button>
         </div>
 
-        <div className="h-5/6 overflow-y-scroll overflow-x-hidden custom-scrollbar  ">
-          <div className="">
-            <button
-              onClick={createNewChat}
-              className="hover:bg-amber-100/10 w-11/12 pt-2 mr-3 ml-3 mt-1 mb-1 pr-10  pl-3 pb-2  rounded-md transition-all duration-200  "
-            >
-              <i className="fa-regular fa-pen-to-square mr-5"></i>
-              <p className="inline">New Chat</p>
-            </button>
-          </div>
+        {/* New Chat */}
+        <button className="new-chat-btn" onClick={createNewChat}>
+          <i className="fa-regular fa-pen-to-square mr-2"></i>
+          New Chat
+        </button>
 
-          <hr className="opacity-10 " />
-          <div className="p-0.5 relative">
-            {!user ? (
-              <p className="text-center text-gray-300 mt-5">Please login</p>
-            ) : (
-              <ul className="">
-                {allThreads?.map((thread) => (
-                  <li
-                    className="w-11/12  p-1.5 ml-2 hover:bg-amber-100/10 rounded-lg transition-all duration-200 thread "
-                    key={thread.threadId}
-                    onClick={() => changeThread(thread.threadId)}
-                  >
-                    {thread.title.length < 20 ? thread.title : "Chat"}
-                    <i
-                      className="fa-solid fa-trash absolute mt-1  right-8"
-                      onClick={(e) => {
-                        console.log("to be deleted:" + thread.threadId);
-                        e.stopPropagation();
-                        deleteThread(thread.threadId);
-                      }}
-                    ></i>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+        {/* Divider */}
+        <hr className="sidebar-divider" />
+
+        {/* THREAD LIST */}
+        <div className="thread-list">
+          {!user ? (
+            <p className="text-gray-300 text-center mt-4">Login to view chats</p>
+          ) : (
+            allThreads?.map((thread) => (
+              <div
+                key={thread.threadId}
+                className="thread-item"
+                onClick={() => changeThread(thread.threadId)}
+              >
+                <span className="thread-title">
+                  {thread.title.length < 35 ? thread.title : thread.title.slice(0, 34) + "…"}
+                </span>
+
+                <i
+                  className="fa-solid fa-trash delete-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteThread(thread.threadId);
+                  }}
+                />
+              </div>
+            ))
+          )}
         </div>
 
-        <hr className="opacity-10 mt-5" />
-        <div className="flex justify-center items-baseline">
-          <p className="">By Rishi</p>
+        {/* FOOTER */}
+        <div className="sidebar-footer">
+          <p>By Rishi</p>
         </div>
-      </section>
+      </aside>
     </>
   );
 }
-
-export default Sidebar;

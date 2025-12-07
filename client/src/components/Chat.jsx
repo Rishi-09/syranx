@@ -28,7 +28,7 @@ const Chat = () => {
 
   return (
     <>
-      <div className="chat flex-1 overflow-y-auto p-4 ">
+      <div className="chat w-full flex-1 overflow-y-auto p-4 ">
         {prevChats?.slice(0, -1).map((chat, idx) => (
           <div
             className={
