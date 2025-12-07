@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
+import './Login.css'
 
 function Login() {
+  let [error,setError] = useState(false);
   let { setUser } = useContext(Mycontext);
   const navigate = useNavigate();
   const [formData, setformData] = useState({
@@ -17,17 +19,18 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       setUser(res.data.user)
-      // console.log(res.data);
+      console.log(res.data);
       alert("Logged in!");
       navigate("/");
-    } catch (err) {
-      console.log(err);
+    } catch{
+      setError(true);
     }
   };
 
   return (
     <>
       <div className="main w-screen h-screen flex bg-neutral-900 justify-center items-center">
+        
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -35,6 +38,7 @@ function Login() {
           }}
           className="w-90 grid bg-amber-50/30 rounded-2xl p-10"
         >
+          
            <div className="relative" >
             <button
               className="absolute -right-5 -top-5 hover:bg-neutral-900/40 pl-1 pr-1  rounded-4xl"
@@ -42,6 +46,11 @@ function Login() {
             >
               X{" "}
             </button>
+            {
+          error && (
+            <p className=" error-text text-center" >Invalid email or password</p>
+          )
+        }
           </div>
           <h2 className="justify-self-center">Login</h2>
          

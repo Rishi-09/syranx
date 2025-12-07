@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from '../api.js'
+import api from "../api.js";
 import { useContext } from "react";
 import { Mycontext } from "../components/Mycontext.jsx";
 
 function Signup() {
-
-  let {setUser} = useContext(Mycontext);
+  let { setUser } = useContext(Mycontext);
 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -15,14 +14,12 @@ function Signup() {
     password: "",
   });
 
-  
-
   const signup = async (e) => {
     e.preventDefault();
     try {
-      let res = await api.post("/signup",formData);
+      let res = await api.post("/signup", formData);
       // console.log(res.data);
-      setUser(res.data)
+      setUser(res.data);
       alert("Signed In , please log in");
       navigate("/");
     } catch (err) {
@@ -39,8 +36,12 @@ function Signup() {
         >
           <div className="relative -right-5 -top-5 ">
             <button
+              type="button"
               className="absolute right-0 top-0 hover:bg-neutral-900/40 pl-1 pr-1  rounded-4xl"
-              onClick={() => navigate("/")}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
             >
               X{" "}
             </button>
@@ -83,7 +84,12 @@ function Signup() {
           >
             Signup
           </button>
-          <p className=" justify-self-center hover:underline " onClick={()=>navigate("/login")} >already a user ? Log in</p>
+          <p
+            className=" justify-self-center hover:underline "
+            onClick={() => navigate("/login")}
+          >
+            already a user ? Log in
+          </p>
         </form>
       </div>
     </>
