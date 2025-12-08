@@ -70,7 +70,7 @@ export default function Sidebar() {
     <>
       {/* MOBILE TOGGLE BUTTON (ChatGPT style floating button) */}
       <button
-        className="chatgpt-toggle-btn"
+        className=" absolute top-8 left-10 z-9999 "
         onClick={() => setShowSidebar(true)}
       >
         <i className="fa-solid fa-bars text-xl"></i>
@@ -85,7 +85,7 @@ export default function Sidebar() {
       <aside className={`chatgpt-sidebar ${showSidebar ? "show" : ""}`}>
         
         {/* HEADER + CLOSE BUTTON */}
-        <div className="sidebar-header">
+        <div className="sidebar-header top-5">
           <h2 className="app-title">Syranx</h2>
 
           {/* Close button only on mobile */}
@@ -93,7 +93,7 @@ export default function Sidebar() {
             className="chatgpt-close-btn"
             onClick={() => setShowSidebar(false)}
           >
-            <i className="fa-solid fa-xmark"></i>
+            <i className="fa-solid fa-bars text-xl"></i>  
           </button>
         </div>
 

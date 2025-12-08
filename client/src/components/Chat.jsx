@@ -52,14 +52,14 @@ const Chat = () => {
           </div>
         ))}
         {prevChats.length > 0 && latestReply !== null && (
-          <div className="max-w-5/6  justify-start m-4" key={"typing"}>
+          <div className="max-w-11/12 justify-start m-2" key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {latestReply}
             </ReactMarkdown>
           </div>
         )}
         {prevChats.length > 0 && latestReply === null && (
-          <div className="max-w-5/6  justify-start m-4" key={"typing"}>
+          <div className="max-w-11/12 justify-start m-2" key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {prevChats[prevChats.length - 1].content}
             </ReactMarkdown>

@@ -104,8 +104,8 @@ const Chatwindow = () => {
       )}
 
       {newChat && (
-        <div className="flex justify-center items-center h-full pointer-events-none">
-          <h1 className="font-bold text-4xl opacity-70">Start a New Chat</h1>
+        <div className="flex justify-center items-center h-full ">
+          <h1 className="font-bold text-2xl opacity-70 custom-text ">Start a New Chat</h1>
         </div>
       )}
 
