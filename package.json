@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bytez.js": "^3.0.0",
     "cookie-parser": "^1.4.7",
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.2",
