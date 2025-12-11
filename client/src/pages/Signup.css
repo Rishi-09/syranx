@@ -1,4 +1,4 @@
-.login-wrapper {
+.signup-wrapper {
   width: 100vw;
   height: 100vh;
   background: #0f0f0f;
@@ -7,7 +7,7 @@
   align-items: center;
 }
 
-.login-card {
+.signup-card {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(15px);
   padding: 3rem 2.5rem;
@@ -28,15 +28,15 @@
   color: white;
   cursor: pointer;
   font-size: 14px;
-  transition: 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: 0.2s;
 }
 
 .close-btn:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
-.login-title {
+.signup-title {
   text-align: center;
   font-size: 1.7rem;
   margin-bottom: 1.5rem;
@@ -44,7 +44,8 @@
   letter-spacing: 1px;
 }
 
-.login-input {
+/* Inputs */
+.signup-input {
   width: 100%;
   padding: 0.75rem;
   margin: 0.6rem 0;
@@ -57,12 +58,12 @@
   transition: 0.25s ease;
 }
 
-.login-input:focus {
+.signup-input:focus {
   border-color: #f8c471;
   background: rgba(255, 255, 255, 0.16);
 }
 
-.login-btn {
+.signup-btn {
   width: 100%;
   padding: 0.8rem;
   margin-top: 1rem;
@@ -75,11 +76,11 @@
   transition: 0.2s ease;
 }
 
-.login-btn:hover {
+.signup-btn:hover {
   background: linear-gradient(135deg, #f7b456, #df8d10);
 }
 
-.login-link {
+.signup-link {
   text-align: center;
   margin-top: 1rem;
   color: #f39c12;
@@ -87,12 +88,13 @@
   transition: 0.2s ease;
 }
 
-.login-link:hover {
+.signup-link:hover {
   text-decoration: underline;
 }
 
-.error-text {
-  color: #ff4d4d !important;
+.signup-error {
+  color: #ff4d4d;
+  text-align: center;
+  margin-bottom: 0.5rem;
   text-decoration: underline rgba(255, 77, 77, 0.6);
-  margin-bottom: 0.7rem;
 }

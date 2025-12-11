@@ -2,12 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
-import './Login.css'
+import "./Login.css";
 
 function Login() {
-  let [error,setError] = useState(false);
-  let { setUser } = useContext(Mycontext);
+  const [error, setError] = useState(false);
+  const { setUser } = useContext(Mycontext);
   const navigate = useNavigate();
+
   const [formData, setformData] = useState({
     email: "",
     password: "",
@@ -18,75 +19,67 @@ function Login() {
       let res = await api.post("/login", formData);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      setUser(res.data.user)
-      console.log(res.data);
-      alert("Logged in!");
+
+      setUser(res.data.user);
       navigate("/");
-    } catch{
+    } catch {
       setError(true);
     }
   };
 
   return (
-    <>
-      <div className="main w-screen h-screen flex bg-neutral-900 justify-center items-center">
-        
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            login();
-          }}
-          className="w-90 grid bg-amber-50/30 rounded-2xl p-10"
+    <div className="login-wrapper">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          login();
+        }}
+        className="login-card"
+      >
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="close-btn"
         >
-          
-           <div className="relative" >
-            <button
-              className="absolute -right-5 -top-5 hover:bg-neutral-900/40 pl-1 pr-1  rounded-4xl"
-              onClick={() => navigate("/")}
-            >
-              X{" "}
-            </button>
-            {
-          error && (
-            <p className=" error-text text-center" >Invalid email or password</p>
-          )
-        }
-          </div>
-          <h2 className="justify-self-center">Login</h2>
-         
-          <br />
-          <input
-            type="email"
-            id="email"
-            placeholder="email"
-            className="outline-1 rounded-lg p-2 m-2"
-            onChange={(e) =>
-              setformData({ ...formData, email: e.target.value })
-            }
-          />
-          <br />
-          <input
-            type="password"
-            id="userName"
-            placeholder="password"
-            className="outline-1 rounded-lg p-2 m-2 "
-            onChange={(e) =>
-              setformData({ ...formData, password: e.target.value })
-            }
-          />
-          <button className="bg-blue-500 pt-1 pb-1 w-30 justify-self-center rounded-lg mt-4 hover:bg-blue-600/50">
-            {" "}
-            Login
-          </button>
-          <p
-            className="hover:underline justify-self-center "
-            onClick={() => navigate("/signup")}
-          >
-            new user?, register instead
+          ✕
+        </button>
+
+        <h2 className="login-title">Login</h2>
+
+        {error && (
+          <p className="error-text text-center">
+            Invalid email or password
           </p>
-        </form>
-      </div>
-    </>
+        )}
+
+        <input
+          type="email"
+          placeholder="email"
+          className="login-input"
+          onChange={(e) =>
+            setformData({ ...formData, email: e.target.value })
+          }
+        />
+
+        <input
+          type="password"
+          placeholder="password"
+          className="login-input"
+          onChange={(e) =>
+            setformData({ ...formData, password: e.target.value })
+          }
+        />
+
+        <button className="login-btn">Login</button>
+
+        <p
+          onClick={() => navigate("/signup")}
+          className="login-link"
+        >
+          new user? register instead
+        </p>
+      </form>
+    </div>
   );
 }
 

@@ -1,27 +1,74 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { Mycontext } from "./Mycontext";
-import './Dropdown.css'
+import { v1 as uuid } from "uuid";
+import "./Dropdown.css";
 
 export default function Dropdown() {
-  const { user, setUser } = useContext(Mycontext);
-  const [showDropDown, setShowDropDown] = useState(false);
+  const {
+    user,
+    setUser,
+    setNewChat,
+    setReply,
+    setPrompt,
+    setPrevChats,
+    setCurrThreadId,
+  } = useContext(Mycontext);
+
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
-  const signup = () => navigate("/signup");
-  const login = () => navigate("/login");
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [showConfirmLogout, setShowConfirmLogout] = useState(false);
+  // const [theme, setTheme] = useState(
+  //   localStorage.getItem("theme") || "dark"
+  // );
+
+
+  // useEffect(() => {
+  //   document.documentElement.setAttribute("data-theme", theme);
+  //   localStorage.setItem("theme", theme);
+  // }, [theme]);
+
+  // const toggleTheme = () =>
+  //   setTheme((t) => (t === "dark" ? "light" : "dark"));
+
+  const signup = () => {
+    navigate("/signup");
+  };
+
+  const login = () => {
+    
+    navigate("/login");
+  };
 
   const logout = () => {
+    
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+
+    setNewChat(true);
+    setReply(null);
+    setPrompt("");
+    setPrevChats([]);
+    setCurrThreadId(uuid());
+
+    setShowConfirmLogout(false);
     navigate("/login");
   };
 
   useEffect(() => {
     const close = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
         setShowDropDown(false);
       }
     };
@@ -30,59 +77,107 @@ export default function Dropdown() {
   }, []);
 
   return (
-    <div className="relative select-none" ref={dropdownRef}>
-      <div
-        className="cursor-pointer p-2 rounded-full hover:bg-white/10 transition"
-        onClick={() => setShowDropDown(!showDropDown)}
-      >
-        <i className="fa-solid fa-user text-2xl text-gray-200"></i>
-      </div>
-
-      {showDropDown && (
+    <>
+      <div className="relative select-none" ref={dropdownRef}>
         <div
-          className="
-            absolute right-0 mt-2 w-52 
-            bg-neutral-800 text-gray-200 
-            border border-white/10 rounded-xl 
-            shadow-lg backdrop-blur-xl 
-            animate-fadeScale z-9999
-          "
+          className="cursor-pointer p-2 rounded-full syranx-avatar-btn"
+          onClick={() => {
+            
+            setShowDropDown(!showDropDown);
+          }}
         >
-          <ul className="py-2 mask-linear-to-stone-50">
+          {user ? (
+            <div className="avatar-circle-small">
+              {user.userName?.charAt(0).toUpperCase()}
+            </div>
+          ) : (
+            <i className="fa-solid fa-user text-2xl text-gray-200"></i>
+          )}
+        </div>
 
-            {user ? (
-              <>
+        {showDropDown && (
+          <div className="syranx-dropdown-panel slide-dropdown">
+            
+            <div className="dropdown-arrow"></div>
+
+            {user && (
+              <div className="dropdown-user-header">
+                <div className="avatar-circle">
+                  {user.userName?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="dropdown-username">{user.userName}</p>
+                  <p className="dropdown-email">{user.email}</p>
+                </div>
+              </div>
+            )}
+
+            <ul className="dropdown-list">
+              {!user ? (
+                <>
+                  <li
+                    className="dropdown-item syranx-hover"
+                    onClick={signup}
+                  >
+                    Sign Up
+                  </li>
+                  <li
+                    className="dropdown-item syranx-hover"
+                    onClick={login}
+                  >
+                    Login
+                  </li>
+                </>
+              ) : (
                 <li
-                  className="px-4 py-2 hover:bg-white/10 cursor-pointer rounded-lg transition"
-                  onClick={logout}
+                  className="dropdown-item syranx-hover"
+                  onClick={() => setShowConfirmLogout(true)}
                 >
                   Log Out
                 </li>
-              </>
-            ) : (
-              <>
-                <li
-                  className="px-4 py-2 hover:bg-white/10 cursor-pointer rounded-lg transition"
-                  onClick={signup}
-                >
-                  Sign Up
-                </li>
+              )}
 
-                <li
-                  className="px-4 py-2 hover:bg-white/10 cursor-pointer rounded-lg transition"
-                  onClick={login}
-                >
-                  Login
-                </li>
-              </>
-            )}
+              <hr className="dropdown-divider" />
 
-            <li className="px-4 py-2 hover:bg-white/10 cursor-pointer rounded-lg transition">
-              Soon...
-            </li>
-          </ul>
+              {/* <li
+                className="dropdown-item syranx-hover"
+                onClick={toggleTheme}
+                onMouseEnter
+              >
+                Toggle Theme
+              </li>
+
+              <li
+                className="dropdown-item syranx-hover"
+                onMouseEnter
+              >
+                Help Center
+              </li> */}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* LOGOUT CONFIRMATION MODAL */}
+      {showConfirmLogout && (
+        <div className="logout-overlay">
+          <div className="logout-modal animate-fadeScale">
+            <p className="logout-title">Log out of Syranx?</p>
+
+            <div className="logout-buttons">
+              <button
+                className="modal-btn cancel-btn"
+                onClick={() => setShowConfirmLogout(false)}
+              >
+                Cancel
+              </button>
+              <button className="modal-btn logout-btn" onClick={logout}>
+                Log Out
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

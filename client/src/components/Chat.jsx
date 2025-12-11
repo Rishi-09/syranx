@@ -28,7 +28,7 @@ const Chat = () => {
 
   return (
     <>
-      <div className="chat w-full flex-1 overflow-y-auto p-4 ">
+      <div className="chat w-5/6 m-auto flex-1 overflow-y-auto p-4 custom-chat">
         {prevChats?.slice(0, -1).map((chat, idx) => (
           <div
             className={
@@ -37,11 +37,11 @@ const Chat = () => {
             key={idx}
           >
             {chat.role === "user" ? (
-              <p className="prompt m-4 p-4 bg-amber-50/10 rounded-4xl max-w-5/6 ">
+              <p className="prompt m-4 p-4 bg-amber-50/10 rounded-4xl max-w-5/6 custom-prompt ">
                 {chat.content}
               </p>
             ) : (
-              <div className="reply m-4 max-w-5/6 p-4 rounded-4xl">
+              <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width ">
                 <div className=" justify-start">
                   <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                     {chat.content}
@@ -52,14 +52,14 @@ const Chat = () => {
           </div>
         ))}
         {prevChats.length > 0 && latestReply !== null && (
-          <div className="max-w-11/12 justify-start m-2" key={"typing"}>
+          <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width " key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {latestReply}
             </ReactMarkdown>
           </div>
         )}
         {prevChats.length > 0 && latestReply === null && (
-          <div className="max-w-11/12 justify-start m-2" key={"typing"}>
+          <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width " key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {prevChats[prevChats.length - 1].content}
             </ReactMarkdown>

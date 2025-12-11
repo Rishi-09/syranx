@@ -37,7 +37,7 @@ export default function Sidebar() {
       const res = await api.get(`/thread/${id}`);
       setPrevChats(res.data.message || []);
       setCurrThreadId(id);
-      setShowSidebar(false); // auto-close on phone like ChatGPT
+      setShowSidebar(false);
     } catch (err) {
       console.log(err);
     }
@@ -68,72 +68,68 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* MOBILE TOGGLE BUTTON (ChatGPT style floating button) */}
       <button
-        className=" absolute top-8 left-10 z-9999 "
+        className="absolute top-8 left-10 z-9999"
         onClick={() => setShowSidebar(true)}
       >
         <i className="fa-solid fa-bars text-xl"></i>
       </button>
 
-      {/* BLURRED OVERLAY */}
       {showSidebar && (
         <div className="chatgpt-sidebar-overlay" onClick={() => setShowSidebar(false)} />
       )}
 
-      {/* SIDEBAR ITSELF */}
       <aside className={`chatgpt-sidebar ${showSidebar ? "show" : ""}`}>
         
-        {/* HEADER + CLOSE BUTTON */}
         <div className="sidebar-header top-5">
           <h2 className="app-title">Syranx</h2>
 
-          {/* Close button only on mobile */}
-          <button
-            className="chatgpt-close-btn"
-            onClick={() => setShowSidebar(false)}
-          >
-            <i className="fa-solid fa-bars text-xl"></i>  
+          <button className="chatgpt-close-btn" onClick={() => setShowSidebar(false)}>
+            <i className="fa-solid fa-bars text-xl"></i>
           </button>
         </div>
 
-        {/* New Chat */}
-        <button className="new-chat-btn" onClick={createNewChat}>
+        
+        <button className="new-chat-btn syranx-hover" onClick={createNewChat}>
           <i className="fa-regular fa-pen-to-square mr-2"></i>
           New Chat
         </button>
 
-        {/* Divider */}
         <hr className="sidebar-divider" />
 
-        {/* THREAD LIST */}
         <div className="thread-list">
           {!user ? (
             <p className="text-gray-300 text-center mt-4">Login to view chats</p>
           ) : (
-            allThreads?.map((thread) => (
-              <div
-                key={thread.threadId}
-                className="thread-item"
-                onClick={() => changeThread(thread.threadId)}
-              >
-                <span className="thread-title">
-                  {thread.title.length < 35 ? thread.title : thread.title.slice(0, 34) + "…"}
-                </span>
+            allThreads?.map((thread) => {
+              const isActive = currThreadId === thread.threadId;
 
-                <i
-                  className="fa-solid fa-trash delete-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteThread(thread.threadId);
-                  }}
-                />
-              </div>
-            ))
+              return (
+                <div
+                  key={thread.threadId}
+                  className={`thread-item syranx-hover  ${
+                    isActive ? "active-thread" : ""
+                  }`}
+                  onClick={() => changeThread(thread.threadId)}
+                >
+                  <span className="thread-title">
+                    {thread.title.length < 35 ? thread.title : thread.title.slice(0, 34) + "…"}
+                  </span>
+                  
+
+                  <i
+                    className="fa-solid fa-trash delete-icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteThread(thread.threadId);
+                    }}
+                  />
+                </div>
+              );
+            })
           )}
         </div>
 
-        {/* FOOTER */}
         <div className="sidebar-footer">
           <p>By Rishi</p>
         </div>
