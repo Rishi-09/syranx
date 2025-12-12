@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "./Mycontext";
-import { PuffLoader, RingLoader } from "react-spinners";
+import { PuffLoader } from "react-spinners";
 import Chat from "./Chat";
 import Dropdown from "./Dropdown";
 import "./Sidebar.css";
 import "./Chatwindow.css";
+import { useNavigate } from "react-router-dom";
 
 const Chatwindow = () => {
   const {
@@ -18,6 +19,7 @@ const Chatwindow = () => {
     setPrevChats,
     newChat,
     setNewChat,
+    user
   } = useContext(Mycontext);
 
   const [loading, setLoading] = useState(false);
@@ -25,8 +27,10 @@ const Chatwindow = () => {
 
   // store the current AbortController so we can abort the request
   const controllerRef = useRef(null);
+  const navigate = useNavigate();
 
   const getReply = async () => {
+    if(!user) navigate("/login");
     if (!prompt.trim()) return;
 
     if (controllerRef.current) {
@@ -143,10 +147,14 @@ const Chatwindow = () => {
 
       <div ref={chatContainerRef} className="chatgpt-chat-container">
         <Chat />
-        <PuffLoader color="#f8c471" className="m-26 " loading={loading} />
+        <div className="flex w-full justify-start p-1 pl-1" >
+          <PuffLoader color="#f8c471" className=" " loading={loading} />
+        </div>
       </div>
 
-      <div
+      {
+        user?(
+          <div
         className="
           chatgpt-input-wrapper
           fixed bottom-6 w-full flex justify-center
@@ -211,7 +219,10 @@ const Chatwindow = () => {
             transition-all duration-200
             "
           >
-            <i className="fa-regular fa-paper-plane " style={{color:"black"}} ></i>
+            <i
+              className="fa-regular fa-paper-plane "
+              style={{ color: "black" }}
+            ></i>
           </button>
         )}
         {isGenerating && (
@@ -224,6 +235,8 @@ const Chatwindow = () => {
           </button>
         )}
       </div>
+        ): <h3>Please login click the dropdown (upper right corner)</h3>
+      }
 
       <p className="chatgpt-footer">Syranx may produce inaccurate responses.</p>
     </section>
