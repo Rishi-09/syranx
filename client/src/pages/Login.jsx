@@ -2,10 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
+import { toast } from "react-toastify";
 import "./Login.css";
 
 function Login() {
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { setUser } = useContext(Mycontext);
   const navigate = useNavigate();
 
@@ -15,16 +17,26 @@ function Login() {
   });
 
   const login = async () => {
+    setLoading(true);
+    setError(false);
+
     try {
       let res = await api.post("/login", formData);
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       setUser(res.data.user);
+
+      toast.success("Logged in successfully!", { theme: "dark" });
+
       navigate("/");
     } catch {
       setError(true);
+      toast.error("Invalid credentials!", { theme: "dark" });
     }
+
+    setLoading(false);
   };
 
   return (
@@ -36,15 +48,7 @@ function Login() {
         }}
         className="login-card"
       >
-        <button
-          type="button"
-          onClick={() => navigate("/")}
-          className="close-btn"
-        >
-          ✕
-        </button>
-
-        <h2 className="login-title">Login</h2>
+        <h2 className="login-title">{loading ? "Logging in..." : "Login"}</h2>
 
         {error && (
           <p className="error-text text-center">
@@ -70,12 +74,11 @@ function Login() {
           }
         />
 
-        <button className="login-btn">Login</button>
+        <button className="login-btn" disabled={loading}>
+          {loading ? "Please wait..." : "Login"}
+        </button>
 
-        <p
-          onClick={() => navigate("/signup")}
-          className="login-link"
-        >
+        <p onClick={() => navigate("/signup")} className="login-link">
           new user? register instead
         </p>
       </form>

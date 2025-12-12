@@ -8,6 +8,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Mycontext } from "./components/Mycontext";
 import { v1 as uuid } from "uuid";
 import { AuthContext } from "./context/Authcontext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const App = () => {
   let [prompt, setPrompt] = useState("");
@@ -35,20 +38,33 @@ const App = () => {
   };
 
   return (
-    <Mycontext.Provider value={providerValues}>
-      <BrowserRouter>
-        <div className="main flex">
-          <Sidebar />
+  <Mycontext.Provider value={providerValues}>
+    <BrowserRouter>
+      <div className="main flex">
+        <Sidebar />
 
-          <Routes>
-            <Route path="/" element={<Chatwindow />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </Mycontext.Provider>
-  );
+        <Routes>
+          <Route path="/" element={<Chatwindow />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+
+        <ToastContainer
+          position="top-right"
+          autoClose={1800}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
+      </div>
+    </BrowserRouter>
+  </Mycontext.Provider>
+);
+
 };
 
 export default App;

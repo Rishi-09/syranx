@@ -21,6 +21,13 @@ const Chatwindow = () => {
     setNewChat,
     user
   } = useContext(Mycontext);
+  useEffect(() => {
+  if (!user) {
+    const stored = localStorage.getItem("user");
+    if (!stored) navigate("/login");
+  }
+}, [user]);
+
 
   const [loading, setLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -147,7 +154,7 @@ const Chatwindow = () => {
 
       <div ref={chatContainerRef} className="chatgpt-chat-container">
         <Chat />
-        <div className="flex w-full justify-start p-1 pl-1" >
+        <div className=" relative pl-24 custom-loader " >
           <PuffLoader color="#f8c471" className=" " loading={loading} />
         </div>
       </div>

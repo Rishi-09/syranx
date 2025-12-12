@@ -2,13 +2,15 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
 
 function Signup() {
   const { setUser } = useContext(Mycontext);
   const navigate = useNavigate();
 
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -17,32 +19,39 @@ function Signup() {
 
   const signup = async (e) => {
     e.preventDefault();
-    try {
-      let res = await api.post("/signup", formData);
-      setUser(res.data);
+    setLoading(true);
 
-      navigate("/login"); // go to login after signup
+    try {
+      await api.post("/signup", formData);
+
+      toast.success("Account created successfully!", { theme: "dark" });
+      let loginRes = await api.post("/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", loginRes.data.token);
+      localStorage.setItem("user", JSON.stringify(loginRes.data.user));
+
+      setUser(loginRes.data.user);
+
+      toast.success("Welcome to Syranx ✨", { theme: "dark" });
+
+      navigate("/");
     } catch (err) {
       console.log(err);
-      setError("Signup failed. Try again.");
+      toast.error("Signup failed. Try again.", { theme: "dark" });
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="signup-wrapper">
       <form className="signup-card" onSubmit={signup}>
-        
-        <button
-          type="button"
-          className="close-btn"
-          onClick={() => navigate("/")}
-        >
-          ✕
-        </button>
-
-        <h2 className="signup-title">Create Account</h2>
-
-        {error && <p className="signup-error">{error}</p>}
+        <h2 className="signup-title">
+          {loading ? "Creating your account..." : "Create Account"}
+        </h2>
 
         <input
           type="text"
@@ -71,7 +80,9 @@ function Signup() {
           }
         />
 
-        <button className="signup-btn">Sign Up</button>
+        <button className="signup-btn" disabled={loading}>
+          {loading ? "Please wait..." : "Sign Up"}
+        </button>
 
         <p className="signup-link" onClick={() => navigate("/login")}>
           Already a user? Login instead
