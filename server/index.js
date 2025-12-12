@@ -20,7 +20,7 @@ const connectDB=async()=>{
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite or React dev server
+    origin: "https://syranx.vercel.app/", 
     credentials: true,
   })
 );
