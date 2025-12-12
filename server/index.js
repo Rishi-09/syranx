@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import getResponse from "./utils/groqClients.js";
 import mongoose from "mongoose";
 import 'dotenv/config';
 import chatRoutes from './routes/chat.js';
@@ -18,7 +17,7 @@ const connectDB=async()=>{
 }
 
 app.use(cors({
-  origin: "https://syranx.vercel.app",
+  origin:"https://syranx.vercel.app",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
