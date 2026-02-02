@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 const api = axios.create({
-  baseURL: "https://syranx.onrender.com/api",
+  baseURL: "https://syranx-production-a4a2.up.railway.app/api",
 });
 
 api.interceptors.request.use((config) => {
@@ -18,8 +18,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
-
 
 export default api;
