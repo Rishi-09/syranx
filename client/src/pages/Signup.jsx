@@ -23,24 +23,22 @@ function Signup() {
 
     try {
       await api.post("/signup", formData);
-
       toast.success("Account created successfully!", { theme: "dark" });
       let loginRes = await api.post("/login", {
         email: formData.email,
         password: formData.password,
       });
-
       localStorage.setItem("token", loginRes.data.token);
       localStorage.setItem("user", JSON.stringify(loginRes.data.user));
-
       setUser(loginRes.data.user);
-
       toast.success("Welcome to Syranx ✨", { theme: "dark" });
-
       navigate("/");
     } catch (err) {
       console.log(err);
-      toast.error("Signup failed. Try again.", { theme: "dark" });
+
+      const message = err.response?.data?.error || "Something went wrong";
+
+      toast.error(message, { theme: "dark" });
     }
 
     setLoading(false);
@@ -66,9 +64,7 @@ function Signup() {
           type="email"
           placeholder="Email"
           className="signup-input"
-          onChange={(e) =>
-            setFormData({ ...formData, email: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
 
         <input

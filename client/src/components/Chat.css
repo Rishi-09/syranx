@@ -12,6 +12,20 @@
   overflow-x: auto !important;
   max-width: 100%;
 }
+.message {
+  animation: syranx-fade-up 0.35s ease;
+}
+
+@keyframes syranx-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 700px) {
   .hljs {

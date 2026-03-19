@@ -41,7 +41,7 @@ const Chat = () => {
                 {chat.content}
               </p>
             ) : (
-              <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width ">
+              <div className="message reply m-4 max-w-5/6 p-4 rounded-4xl custom-width ">
                 <div className=" justify-start">
                   <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                     {chat.content}
