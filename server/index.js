@@ -17,7 +17,7 @@ const connectDB=async()=>{
 }
 
 app.use(cors({
-  origin:"*",
+  origin:"https://syranx.vercel.app",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
