@@ -4,8 +4,6 @@
   import { PuffLoader } from "react-spinners";
   import Chat from "./Chat";
   import Dropdown from "./Dropdown";
-  import "./Sidebar.css";
-  import "./Chatwindow.css";
   import { useNavigate } from "react-router-dom";
 
   const Chatwindow = () => {
@@ -133,121 +131,94 @@
     }, [prevChats, reply]);
 
     return (
-      <section className="chatgpt-chat-wrapper bg-neutral-900 text-white w-full h-screen flex flex-col items-center relative">
-        <div className="absolute right-5 top-5 z-4000">
+      <section className="relative w-full h-screen flex flex-col items-center text-white bg-neutral-900 overflow-hidden" style={{backgroundImage: `radial-gradient(circle at 20% 30%, rgba(248,196,113,0.08), transparent 40%), radial-gradient(circle at 80% 60%, rgba(243,156,18,0.06), transparent 40%)`, backgroundAttachment: "fixed"}}>
+        <style>{`
+          .send-btn {
+            transition: all 0.2s ease;
+          }
+          .send-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 22px rgba(243,156,18,0.6);
+          }
+          .send-btn:active {
+            transform: scale(0.92);
+          }
+        `}</style>
+        <div className="absolute right-5 top-5 z-40">
           <Dropdown />
         </div>
 
         {showScrollButton && (
-          <button onClick={scrollToBottom} className="scroll-btn">
-            <i className="fa-solid fa-chevron-down"></i>
+          <button onClick={scrollToBottom} className="fixed bottom-32 right-7 bg-neutral-800 p-3 rounded-full border border-gray-600 z-50 hover:bg-neutral-700 transition-colors">
+            <i className="fa-solid fa-chevron-down text-white"></i>
           </button>
         )}
 
         {newChat && (
-          <div className="flex justify-center items-center h-full ">
-            <h1 className="font-bold text-2xl opacity-70 custom-text ">
+          <div className="flex justify-center items-center h-full">
+            <h1 className="font-bold text-2xl opacity-70 custom-text">
               Start a New Chat
             </h1>
           </div>
         )}
 
-        <div ref={chatContainerRef} className="chatgpt-chat-container">
+        <div ref={chatContainerRef} className="w-full max-w-full h-[calc(100vh-150px)] mt-24 overflow-y-scroll p-4 scrollbar-hide">
           <Chat />
-          <div className=" relative pl-24 custom-loader " >
-            <PuffLoader color="#f8c471" className=" " loading={loading} />
+          <div className="relative pl-24 custom-loader">
+            <PuffLoader color="#f8c471" className="" loading={loading} />
           </div>
         </div>
-        
 
         {
           user?(
-            <div
-          className="
-            chatgpt-input-wrapper
-            fixed bottom-6 w-full flex justify-center
-            px-4
-            "
-        >
-          <textarea
-            placeholder="share anything..."
-            className="
-              chatgpt-input
-              w-full
-              max-w-[750px]
-              bg-[#1a1a1a]
-              text-[#f6f2e9]
-              border border-[#3e3e3e]
-              rounded-xl
-              px-4 py-3
-              resize-none
-              outline-none
-              leading-[1.4rem]
-              transition-all duration-200
-              shadow-[0_0_20px_rgba(249,178,51,0.12)]
-              min-h-[60px]
-              max-h-[200px]
-              overflow-y-auto
-              scrollbar-thin
-              scrollbar-track-[#111]
-              scrollbar-thumb-[#f7b456]
-              hover:scrollbar-thumb-[#df8d10]
-      "
-            value={prompt}
-            onChange={(e) => {
-              setPrompt(e.target.value);
-              const el = e.target;
-              el.style.height = "auto";
-              el.style.height = `${el.scrollHeight}px`;
-            }}
-            rows={1}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.shiftKey) return;
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (prompt.trim().length === 0) return;
-                getReply();
-              }
-            }}
-          />
+            <div className="fixed bottom-6 w-full flex justify-center px-4 z-50">
+              <textarea
+                placeholder="share anything..."
+                className="w-full max-w-[750px] bg-[#1a1a1a] text-[#f6f2e9] border border-[#3e3e3e] rounded-xl px-4 py-3 resize-none outline-none leading-[1.4rem] transition-all duration-200 shadow-[0_0_20px_rgba(249,178,51,0.12)] min-h-[60px] max-h-[200px] overflow-y-auto custom-scrollbar"
+                value={prompt}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  const el = e.target;
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
+                }}
+                rows={1}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && e.shiftKey) return;
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (prompt.trim().length === 0) return;
+                    getReply();
+                  }
+                }}
+              />
 
-          {!isGenerating && (
-            <button
-              onClick={getReply}
-              disabled={isGenerating}
-              className="
-              ml-3
-              px-4
-              rounded-lg
-              bg-linear-to-br from-[#f8c471] to-[#f39c12]
-              text-black
-              text-xl 
-              send-btn
-              shadow-[0_0_12px_rgba(243,156,18,0.35)]
-              hover:shadow-[0_0_18px_rgba(243,156,18,0.55)]
-              transition-all duration-200
-              "
-            >
-              <i
-                className="fa-regular fa-paper-plane "
-                style={{ color: "black" }}
-              ></i>
-            </button>
-          )}
-          {isGenerating && (
-            <button
-              onClick={stopGeneration}
-              className="ml-3 px-4 rounded-lg bg-[#2b2b2b] text-[#f6f2e9] border border-[#444] hover:bg-[#3a3a3a] transition-all"
-              title="Stop generation"
-            > 
-              <i className="fa-solid fa-square"></i> {/* stop icon */}
-            </button>
-          )}
-        </div>
-          ): <h3>Please login click the dropdown (upper right corner)</h3>
+              {!isGenerating && (
+                <button
+                  onClick={getReply}
+                  disabled={isGenerating}
+                  className="ml-3 px-4 rounded-lg bg-gradient-to-br from-[#f8c471] to-[#f39c12] text-black text-xl send-btn shadow-[0_0_12px_rgba(243,156,18,0.35)] hover:shadow-[0_0_18px_rgba(243,156,18,0.55)] transition-all duration-200 hover:scale-110"
+                >
+                  <i
+                    className="fa-regular fa-paper-plane"
+                    style={{ color: "black" }}
+                  ></i>
+                </button>
+              )}
+              {isGenerating && (
+                <button
+                  onClick={stopGeneration}
+                  className="ml-3 px-4 rounded-lg bg-[#2b2b2b] text-[#f6f2e9] border border-[#444] hover:bg-[#3a3a3a] transition-all"
+                  title="Stop generation"
+                > 
+                  <i className="fa-solid fa-square"></i>
+                </button>
+              )}
+            </div>
+          ): <h3 className="text-center text-gray-300">Please login click the dropdown (upper right corner)</h3>
         }
 
-        <p className="chatgpt-footer">Syranx may produce inaccurate responses.</p>
+        <p className="fixed bottom-0 w-full text-center opacity-50 text-xs py-2">Syranx may produce inaccurate responses.</p>
       </section>
     );
   };

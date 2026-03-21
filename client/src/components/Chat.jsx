@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { Mycontext } from "./Mycontext";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
-import "./Chat.css";
 import "highlight.js/styles/github-dark.css";
+
 const Chat = () => {
   let { prevChats, reply } = useContext(Mycontext);
   let [latestReply, setLatestReply] = useState(null);
@@ -28,7 +28,7 @@ const Chat = () => {
 
   return (
     <>
-      <div className="chat w-5/6 m-auto flex-1 overflow-y-auto p-4 custom-chat">
+      <div className="w-5/6 mx-auto flex-1 overflow-y-auto p-4 custom-chat">
         {prevChats?.slice(0, -1).map((chat, idx) => (
           <div
             className={
@@ -37,12 +37,12 @@ const Chat = () => {
             key={idx}
           >
             {chat.role === "user" ? (
-              <p className="prompt m-4 p-4 bg-amber-50/10 rounded-4xl max-w-5/6 custom-prompt ">
+              <p className="prompt m-4 p-4 bg-amber-50/10 rounded-full max-w-5/6 custom-prompt">
                 {chat.content}
               </p>
             ) : (
-              <div className="message reply m-4 max-w-5/6 p-4 rounded-4xl custom-width ">
-                <div className=" justify-start">
+              <div className="message reply m-4 max-w-5/6 p-4 rounded-2xl custom-width">
+                <div className="justify-start">
                   <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                     {chat.content}
                   </ReactMarkdown>
@@ -52,14 +52,14 @@ const Chat = () => {
           </div>
         ))}
         {prevChats.length > 0 && latestReply !== null && (
-          <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width " key={"typing"}>
+          <div className="reply m-4 max-w-5/6 p-4 rounded-2xl custom-width" key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {latestReply}
             </ReactMarkdown>
           </div>
         )}
         {prevChats.length > 0 && latestReply === null && (
-          <div className="reply m-4 max-w-5/6 p-4 rounded-4xl custom-width " key={"typing"}>
+          <div className="reply m-4 max-w-5/6 p-4 rounded-2xl custom-width" key={"typing"}>
             <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
               {prevChats[prevChats.length - 1].content}
             </ReactMarkdown>

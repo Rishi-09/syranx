@@ -3,7 +3,6 @@ import { useContext, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
 import { toast } from "react-toastify";
-import "./Login.css";
 
 function Login() {
   const [error, setError] = useState(false);
@@ -40,18 +39,18 @@ function Login() {
   };
 
   return (
-    <div className="login-wrapper">
+    <div className="w-screen h-screen bg-neutral-950 flex justify-center items-center">
       <form
         onSubmit={(e) => {
           e.preventDefault();
           login();
         }}
-        className="login-card"
+        className="bg-white/8 backdrop-blur-2xl px-10 py-12 rounded-2xl w-96 relative border border-white/8 shadow-2xl"
       >
-        <h2 className="login-title">{loading ? "Logging in..." : "Login"}</h2>
+        <h2 className="text-center text-2xl my-6 text-white tracking-wider font-semibold">{loading ? "Logging in..." : "Login"}</h2>
 
         {error && (
-          <p className="error-text text-center">
+          <p className="text-red-500 text-center underline mb-2.5 text-sm">
             Invalid email or password
           </p>
         )}
@@ -59,7 +58,7 @@ function Login() {
         <input
           type="email"
           placeholder="email"
-          className="login-input"
+          className="w-full px-3 py-2.5 my-1.5 bg-white/12 border border-white/25 rounded-2xl outline-none text-white placeholder-gray-400 text-sm transition-all focus:border-[#f8c471] focus:bg-white/16 focus:outline-none"
           onChange={(e) =>
             setformData({ ...formData, email: e.target.value })
           }
@@ -68,17 +67,17 @@ function Login() {
         <input
           type="password"
           placeholder="password"
-          className="login-input"
+          className="w-full px-3 py-2.5 my-1.5 bg-white/12 border border-white/25 rounded-2xl outline-none text-white placeholder-gray-400 text-sm transition-all focus:border-[#f8c471] focus:bg-white/16 focus:outline-none"
           onChange={(e) =>
             setformData({ ...formData, password: e.target.value })
           }
         />
 
-        <button className="login-btn" disabled={loading}>
+        <button className="w-full px-4 py-3 mt-4 rounded-2xl bg-gradient-to-br from-[#f8c471] to-[#f39c12] text-neutral-950 font-bold text-base cursor-pointer transition-all hover:shadow-lg disabled:opacity-70" disabled={loading}>
           {loading ? "Please wait..." : "Login"}
         </button>
 
-        <p onClick={() => navigate("/signup")} className="login-link">
+        <p onClick={() => navigate("/signup")} className="text-center mt-4 text-[#f39c12] cursor-pointer transition-all hover:underline">
           new user? register instead
         </p>
       </form>
