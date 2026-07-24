@@ -1,10 +1,12 @@
+"use client";
+
 import React, {
   useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Mycontext } from "./Mycontext";
 import { v1 as uuid } from "uuid";
 import "./Dropdown.css";
@@ -20,7 +22,7 @@ export default function Dropdown() {
     setCurrThreadId,
   } = useContext(Mycontext);
 
-  const navigate = useNavigate();
+  const router = useRouter();
   const dropdownRef = useRef(null);
 
   const [showDropDown, setShowDropDown] = useState(false);
@@ -39,12 +41,12 @@ export default function Dropdown() {
   //   setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const signup = () => {
-    navigate("/signup");
+    router.push("/signup");
   };
 
   const login = () => {
-    
-    navigate("/login");
+
+    router.push("/login");
   };
 
   const logout = () => {
@@ -60,7 +62,7 @@ export default function Dropdown() {
     setCurrThreadId(uuid());
 
     setShowConfirmLogout(false);
-    navigate("/login");
+    router.push("/login");
   };
 
   useEffect(() => {

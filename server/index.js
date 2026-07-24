@@ -4,20 +4,21 @@ import mongoose from "mongoose";
 import 'dotenv/config';
 import chatRoutes from './routes/chat.js';
 import authRoutes from './routes/auth.js';
+import logger from './utils/logger.js';
 
 const app = express();
-const port = 8080;
+const port = 4000 ;
 const connectDB=async()=>{
     try{
         await mongoose.connect(process.env.MONGO_DB_URI);
-        console.log("connected with database!")
+        logger.info("connected with database!");
     }catch(err){
-        console.log("connectioon failed!",err);
+        logger.error(`Database connection failed: ${err.message}`);
     }
 }
 
 app.use(cors({
-  origin:"https://syranx.vercel.app",
+  origin:`${process.env.CLIENT_ORIGIN}`|| "http://localhost:3000",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
@@ -32,7 +33,7 @@ app.use("/api",chatRoutes);
 
 
 app.listen(port, () => {
-  console.log(`listening on port localhost:${port} with cors`);
-  
+  logger.info(`listening on port localhost:${port} with cors`);
+
 });
 

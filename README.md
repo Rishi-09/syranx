@@ -20,7 +20,7 @@ https://syranx.vercel.app
 
 ## 🏗️ Tech Stack
 
-**Frontend:** React, Context API, Tailwind, Axios  
+**Frontend:** Next.js, React, Context API, Tailwind, Axios  
 **Backend:** Node.js, Express, MongoDB, Mongoose  
 **AI:** Groq SDK (`llama-3.1-8b-instant`)
 

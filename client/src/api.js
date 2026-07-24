@@ -1,6 +1,6 @@
 import axios from "axios";
 const api = axios.create({
-  baseURL: "https://syranx-production.up.railway.app/api",
+  baseURL: `${process.env.API_BASE}` || "http://localhost:4000",
 });
 
 api.interceptors.request.use((config) => {

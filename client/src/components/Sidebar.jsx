@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useContext, useState } from "react";
 import { Mycontext } from "./Mycontext";
 import { v1 as uuid } from "uuid";

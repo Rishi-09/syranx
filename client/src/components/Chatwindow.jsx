@@ -1,3 +1,5 @@
+  "use client";
+
   import React, { useContext, useEffect, useRef, useState } from "react";
   import api from "../api.js";
   import { Mycontext } from "./Mycontext";
@@ -6,7 +8,8 @@
   import Dropdown from "./Dropdown";
   import "./Sidebar.css";
   import "./Chatwindow.css";
-  import { useNavigate } from "react-router-dom";
+  import { useRouter } from "next/navigation";
+  import { toast } from "react-toastify";
 
   const Chatwindow = () => {
     const {
@@ -24,20 +27,21 @@
     useEffect(() => {
     if (!user) {
       const stored = localStorage.getItem("user");
-      if (!stored) navigate("/login");
+      if (!stored) router.push("/login");
     }
   }, [user]);
 
 
     const [loading, setLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [compacting, setCompacting] = useState(false);
 
     // store the current AbortController so we can abort the request
     const controllerRef = useRef(null);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const getReply = async () => {
-      if(!user) navigate("/login");
+      if(!user) router.push("/login");
       if (!prompt.trim()) return;
 
       if (controllerRef.current) {
@@ -69,6 +73,11 @@
       } catch (err) {
         if (err.name === "CanceledError" || err.name === "AbortError") {
           console.log("Generation aborted by user");
+        } else if (err.response?.data?.code === "token_limit_exceeded") {
+          toast.error(
+            "Token limit reached. Start a new chat, or compact this conversation.",
+            { theme: "dark", autoClose: 5000 }
+          );
         } else {
           console.error(err);
         }
@@ -85,6 +94,22 @@
       }
       setIsGenerating(false);
       setLoading(false);
+    };
+
+    const compactChat = async () => {
+      if (!user || compacting || isGenerating || prevChats.length === 0) return;
+
+      setCompacting(true);
+      try {
+        const res = await api.post(`/thread/${currThreadId}/compact`);
+        setPrevChats(res.data.message || []);
+        toast.success("Conversation compacted", { theme: "dark" });
+      } catch (err) {
+        const message = err.response?.data?.error || "Failed to compact chat";
+        toast.error(message, { theme: "dark" });
+      } finally {
+        setCompacting(false);
+      }
     };
     useEffect(() => {
       if (prompt && reply) {
@@ -210,6 +235,15 @@
               }
             }}
           />
+
+          <button
+            onClick={compactChat}
+            disabled={compacting || isGenerating || prevChats.length === 0}
+            title="Compact conversation history"
+            className="ml-3 px-4 rounded-lg bg-[#2b2b2b] text-[#f6f2e9] border border-[#444] hover:bg-[#3a3a3a] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <i className={`fa-solid ${compacting ? "fa-spinner fa-spin" : "fa-compress"}`}></i>
+          </button>
 
           {!isGenerating && (
             <button

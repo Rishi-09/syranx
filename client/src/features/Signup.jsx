@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
 import { toast } from "react-toastify";
@@ -8,7 +10,7 @@ import "./Signup.css";
 
 function Signup() {
   const { setUser } = useContext(Mycontext);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +34,7 @@ function Signup() {
       localStorage.setItem("user", JSON.stringify(loginRes.data.user));
       setUser(loginRes.data.user);
       toast.success("Welcome to Syranx ✨", { theme: "dark" });
-      navigate("/");
+      router.push("/");
     } catch (err) {
       console.log(err);
 
@@ -80,7 +82,7 @@ function Signup() {
           {loading ? "Please wait..." : "Sign Up"}
         </button>
 
-        <p className="signup-link" onClick={() => navigate("/login")}>
+        <p className="signup-link" onClick={() => router.push("/login")}>
           Already a user? Login instead
         </p>
       </form>

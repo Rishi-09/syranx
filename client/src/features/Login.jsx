@@ -1,4 +1,6 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import api from "../api.js";
 import { Mycontext } from "../components/Mycontext.jsx";
@@ -9,7 +11,7 @@ function Login() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(Mycontext);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [formData, setformData] = useState({
     email: "",
@@ -30,7 +32,7 @@ function Login() {
 
       toast.success("Logged in successfully!", { theme: "dark" });
 
-      navigate("/");
+      router.push("/");
     } catch {
       setError(true);
       toast.error("Invalid credentials!", { theme: "dark" });
@@ -78,7 +80,7 @@ function Login() {
           {loading ? "Please wait..." : "Login"}
         </button>
 
-        <p onClick={() => navigate("/signup")} className="login-link">
+        <p onClick={() => router.push("/signup")} className="login-link">
           new user? register instead
         </p>
       </form>

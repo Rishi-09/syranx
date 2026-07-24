@@ -1,8 +1,9 @@
 import express from "express";
 import Thread from "../models/Thread.js";
 import UserMemory from "../models/UserMemory.js";
-import { generateTitle, getResponse }  from "../utils/groqClients.js";
+import { generateTitle, getResponse, compactConversation }  from "../utils/groqClients.js";
 import { auth } from "../middlewares/auth.js";
+import logger from "../utils/logger.js";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get("/thread", auth, async (req, res) => {
 
     res.json(threads);
   } catch (err) {
+    logger.error(`Failed to load threads: ${err.message}`);
     res.status(500).json({ error: "Failed to load threads" });
   }
 });
@@ -29,6 +31,7 @@ router.get("/thread/:threadId", auth, async (req, res) => {
 
     res.json(thread);
   } catch (err) {
+    logger.error(`Failed to load thread: ${err.message}`);
     res.status(500).json({ error: "Failed" });
   }
 });
@@ -97,8 +100,54 @@ router.post("/chat", auth, async (req, res) => {
 
     res.json(saved);
   } catch (err) {
-    console.error(err);
+    const isTokenLimit =
+      err.status === 413 || err.error?.error?.code === "rate_limit_exceeded";
+
+    if (isTokenLimit) {
+      logger.warn(`Chat blocked by token limit: ${err.message}`);
+      return res.status(413).json({
+        error: "Token limit reached",
+        code: "token_limit_exceeded",
+      });
+    }
+
+    logger.error(`Failed to chat: ${err.message}`);
     res.status(500).json({ error: "Failed to chat" });
+  }
+});
+
+router.post("/thread/:threadId/compact", auth, async (req, res) => {
+  try {
+    const thread = await Thread.findOne({
+      threadId: req.params.threadId,
+      owner: req.user._id,
+    });
+
+    if (!thread) return res.status(404).json({ error: "Thread not found" });
+
+    const cleanMessages = thread.message.map(m => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const result = await compactConversation(cleanMessages);
+
+    if (!result) {
+      return res.status(400).json({ error: "Not enough history to compact" });
+    }
+
+    thread.message = [
+      { role: "system", content: `Summary of earlier conversation:\n\n${result.summary}` },
+      ...result.recent,
+    ];
+    thread.updatedAt = Date.now();
+    const saved = await thread.save();
+
+    logger.info("Thread compacted");
+    res.json(saved);
+  } catch (err) {
+    logger.error(`Failed to compact thread: ${err.message}`);
+    res.status(500).json({ error: "Failed to compact chat" });
   }
 });
 
@@ -114,6 +163,7 @@ router.delete("/thread/:threadId", auth, async (req, res) => {
 
     res.json({ message: "Thread deleted" });
   } catch (err) {
+    logger.error(`Failed to delete thread: ${err.message}`);
     res.status(500).json({ error: "Failed" });
   }
 });

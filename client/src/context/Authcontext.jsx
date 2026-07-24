@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { jwtDecode } from 'jwt-decode'
 import { AuthContext } from "./Authcontext.js";

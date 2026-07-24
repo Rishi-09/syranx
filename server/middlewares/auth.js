@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import logger from "../utils/logger.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -16,7 +17,7 @@ export const auth = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.log(err);
+    logger.warn(`Invalid or expired token: ${err.message}`);
     res.status(401).json({ error: "Invalid or expired token" });
   }
 };

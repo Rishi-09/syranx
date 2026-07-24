@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useContext, useState, useEffect } from "react";
 import { Mycontext } from "./Mycontext";
 import ReactMarkdown from "react-markdown";

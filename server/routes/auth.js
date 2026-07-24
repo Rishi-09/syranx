@@ -2,20 +2,19 @@ import express from "express";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import logger from "../utils/logger.js";
 
 const router = express.Router();
-console.log("auth route trigerred");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post("/signup", async (req, res) => {
-  console.log("signup route trigerred");
   try {
     const { userName, email, password } = req.body;
-    console.log("processing signup request");
+    logger.info("Signup attempted");
 
     const existing = await User.findOne({ email });
     if (existing) {
-      console.log("Email already exists");
+      logger.warn("Signup failed: email already exists");
       return res.status(400).json({ error: "Email already exists" });
     }
     const hashed = await bcrypt.hash(password, 10);
@@ -25,7 +24,7 @@ router.post("/signup", async (req, res) => {
       email,
       password: hashed,
     });
-    console.log("user creaed")
+    logger.info("User created");
 
     const safeUser = {
       _id: createdUser._id,
@@ -35,7 +34,7 @@ router.post("/signup", async (req, res) => {
 
     res.status(201).json(safeUser);
   } catch (err) {
-    console.log(err);
+    logger.error(`Signup failed: ${err.message}`);
     res.status(500).json({ error: "Signup failed" });
   }
 });
@@ -43,16 +42,23 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    logger.info("Login attempted");
 
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user) {
+      logger.warn("Login failed: unknown email");
       return res.status(400).json({ error: "Invalid email or password" });
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match)
+    if (!match) {
+      logger.warn("Login failed: wrong password");
       return res.status(400).json({ error: "Invalid email or password" });
+    }
 
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+
+    logger.info("Login successful");
 
     res.json({
       token,
@@ -63,7 +69,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
+    logger.error(`Login failed: ${err.message}`);
     res.status(500).json({ error: "Login failed" });
   }
 });
