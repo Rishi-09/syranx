@@ -44,12 +44,12 @@ export default function Providers({ children }) {
           position="top-right"
           autoClose={1800}
           toastClassName={() =>
-            "bg-[#1a1a1a] border border-[#3e3e3e] rounded-xl shadow-[0_0_15px_rgba(249,178,51,0.35)] backdrop-blur-md flex items-center text-[#f6f2e9]"
+            "glass-panel rounded-xl shadow-md flex items-center text-ink"
           }
           bodyClassName={() =>
             "text-sm font-medium px-3 py-2 flex items-center"
           }
-          progressClassName="bg-gradient-to-r from-[#f8c471] to-[#f39c12]"
+          progressClassName="bg-linear-to-r from-accent-soft to-accent-strong"
           closeButton={false}
         />
       </div>

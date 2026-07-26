@@ -9,7 +9,8 @@ import React, {
 import { useRouter } from "next/navigation";
 import { Mycontext } from "./Mycontext";
 import { v1 as uuid } from "uuid";
-import "./Dropdown.css";
+import Avatar from "./ui/Avatar";
+import Modal from "./ui/Modal";
 
 export default function Dropdown() {
   const {
@@ -27,30 +28,18 @@ export default function Dropdown() {
 
   const [showDropDown, setShowDropDown] = useState(false);
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
-  // const [theme, setTheme] = useState(
-  //   localStorage.getItem("theme") || "dark"
-  // );
-
-
-  // useEffect(() => {
-  //   document.documentElement.setAttribute("data-theme", theme);
-  //   localStorage.setItem("theme", theme);
-  // }, [theme]);
-
-  // const toggleTheme = () =>
-  //   setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   const signup = () => {
+    setShowDropDown(false);
     router.push("/signup");
   };
 
   const login = () => {
-
+    setShowDropDown(false);
     router.push("/login");
   };
 
   const logout = () => {
-    
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
@@ -67,10 +56,7 @@ export default function Dropdown() {
 
   useEffect(() => {
     const close = (e) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setShowDropDown(false);
       }
     };
@@ -81,105 +67,95 @@ export default function Dropdown() {
   return (
     <>
       <div className="relative select-none" ref={dropdownRef}>
-        <div
-          className="cursor-pointer p-2 rounded-full syranx-avatar-btn"
-          onClick={() => {
-            
-            setShowDropDown(!showDropDown);
-          }}
+        <button
+          type="button"
+          className="glass-panel flex items-center justify-center rounded-full p-0.5 transition-transform duration-200 ease-out hover:scale-105 active:scale-95"
+          onClick={() => setShowDropDown(!showDropDown)}
         >
           {user ? (
-            <div className="avatar-circle-small">
-              {user.userName?.charAt(0).toUpperCase()}
-            </div>
+            <Avatar kind="user" name={user.userName} size="md" />
           ) : (
-            <i className="fa-solid fa-user text-2xl text-gray-200"></i>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full text-ink-muted">
+              <i className="fa-solid fa-user text-base" />
+            </span>
           )}
-        </div>
+        </button>
 
         {showDropDown && (
-          <div className="syranx-dropdown-panel slide-dropdown">
-            
-            <div className="dropdown-arrow"></div>
-
+          <div className="glass-panel absolute right-0 mt-2.5 w-64 overflow-hidden rounded-2xl p-1.5 shadow-lg animate-scale-in">
             {user && (
-              <div className="dropdown-user-header">
-                <div className="avatar-circle">
-                  {user.userName?.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="dropdown-username">{user.userName}</p>
-                  <p className="dropdown-email">{user.email}</p>
+              <div className="flex items-center gap-3 border-b border-border-subtle px-3 py-3 mb-1">
+                <Avatar kind="user" name={user.userName} size="lg" />
+                <div className="overflow-hidden">
+                  <p className="truncate text-sm font-semibold text-ink">{user.userName}</p>
+                  <p className="truncate text-xs text-ink-muted">{user.email}</p>
                 </div>
               </div>
             )}
 
-            <ul className="dropdown-list">
+            <div className="flex flex-col gap-0.5">
               {!user ? (
                 <>
-                  <li
-                    className="dropdown-item syranx-hover"
+                  <button
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-ink transition-colors duration-150 hover:bg-white/[0.06]"
                     onClick={signup}
                   >
-                    Sign Up
-                  </li>
-                  <li
-                    className="dropdown-item syranx-hover"
+                    <i className="fa-regular fa-user w-4 text-ink-muted" />
+                    Sign up
+                  </button>
+                  <button
+                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-ink transition-colors duration-150 hover:bg-white/[0.06]"
                     onClick={login}
                   >
-                    Login
-                  </li>
+                    <i className="fa-solid fa-arrow-right-to-bracket w-4 text-ink-muted" />
+                    Log in
+                  </button>
                 </>
               ) : (
-                <li
-                  className="dropdown-item syranx-hover"
-                  onClick={() => setShowConfirmLogout(true)}
+                <button
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm text-danger transition-colors duration-150 hover:bg-danger-soft"
+                  onClick={() => {
+                    setShowDropDown(false);
+                    setShowConfirmLogout(true);
+                  }}
                 >
-                  Log Out
-                </li>
+                  <i className="fa-solid fa-arrow-right-from-bracket w-4" />
+                  Log out
+                </button>
               )}
-
-              <hr className="dropdown-divider" />
-
-              {/* <li
-                className="dropdown-item syranx-hover"
-                onClick={toggleTheme}
-                onMouseEnter
-              >
-                Toggle Theme
-              </li>
-
-              <li
-                className="dropdown-item syranx-hover"
-                onMouseEnter
-              >
-                Help Center
-              </li> */}
-            </ul>
+            </div>
           </div>
         )}
       </div>
 
-      {/* LOGOUT CONFIRMATION MODAL */}
-      {showConfirmLogout && (
-        <div className="logout-overlay">
-          <div className="logout-modal animate-fadeScale">
-            <p className="logout-title">Log out of Syranx?</p>
+      <Modal open={showConfirmLogout} onClose={() => setShowConfirmLogout(false)}>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-danger-soft text-danger">
+            <i className="fa-solid fa-arrow-right-from-bracket" />
+          </div>
+          <div>
+            <p className="text-base font-semibold text-ink">Log out of Syranx?</p>
+            <p className="mt-1 text-sm text-ink-muted">
+              You can always sign back in to pick up where you left off.
+            </p>
+          </div>
 
-            <div className="logout-buttons">
-              <button
-                className="modal-btn cancel-btn"
-                onClick={() => setShowConfirmLogout(false)}
-              >
-                Cancel
-              </button>
-              <button className="modal-btn logout-btn" onClick={logout}>
-                Log Out
-              </button>
-            </div>
+          <div className="mt-2 flex w-full items-center gap-3">
+            <button
+              className="flex-1 rounded-xl border border-border bg-surface-3/60 py-2.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-surface-3"
+              onClick={() => setShowConfirmLogout(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="flex-1 rounded-xl bg-linear-to-br from-accent-soft to-accent-strong py-2.5 text-sm font-semibold text-accent-ink shadow-accent transition-all duration-150 hover:brightness-105"
+              onClick={logout}
+            >
+              Log out
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

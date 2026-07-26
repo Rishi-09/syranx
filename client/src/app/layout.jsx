@@ -1,14 +1,22 @@
+import { Inter } from "next/font/google";
 import { AuthProvider } from "../context/Authcontext.jsx";
 import Providers from "./providers.jsx";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata = {
   title: "Syranx",
+  description: "Syranx — an AI chat companion.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <link
           rel="stylesheet"
