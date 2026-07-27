@@ -17,8 +17,12 @@ const connectDB=async()=>{
     }
 }
 
+const allowedOrigins = process.env.CLIENT_ORIGIN
+  ? process.env.CLIENT_ORIGIN.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000"];
+
 app.use(cors({
-  origin:`${process.env.CLIENT_ORIGIN}`|| "http://localhost:3000",
+  origin: allowedOrigins,
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
