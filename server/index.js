@@ -26,6 +26,9 @@ app.use(cors({
 app.use(express.json());
 connectDB();
 
+app.use("/api/health",(req,res)=>{
+  res.json(200,"OK");
+})
 
 
 app.use("/api",authRoutes);
