@@ -5,7 +5,7 @@ Syranx is a full-stack AI chat application inspired by ChatGPT, built with a foc
 ---
 
 # Test Yourself 
-https://syranx.vercel.app
+[syranx](http://32.197.82.141)
 
 ---
 ## ✨ Features
