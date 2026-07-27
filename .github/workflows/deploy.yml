@@ -1,115 +1,24 @@
-#!/bin/bash
-set -e
+name: Deploy to EC2
 
-REPO_ROOT="/syranx"
+on:
+  push:
+    branches:
+      - main
 
-SERVER_DIR="$REPO_ROOT/server"
-CLIENT_DIR="$REPO_ROOT/client"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-SERVER_ENV_FILE="$SERVER_DIR/.env"
-CLIENT_ENV_FILE="$CLIENT_DIR/.env"
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.2
 
-BRANCH="main"
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
 
-cd "$REPO_ROOT"
-
-echo "========== Checking current state =========="
-
-OLD_COMMIT=$(git rev-parse HEAD)
-
-hash_env() {
-    if [ -f "$1" ]; then
-        md5sum "$1" | awk '{print $1}'
-    else
-        echo "none"
-    fi
-}
-
-OLD_SERVER_ENV_HASH=$(hash_env "$SERVER_ENV_FILE")
-OLD_CLIENT_ENV_HASH=$(hash_env "$CLIENT_ENV_FILE")
-
-echo "========== Fetching latest code =========="
-git pull --ff-only origin main
-
-NEW_COMMIT=$(git rev-parse HEAD)
-
-NEW_SERVER_ENV_HASH=$(hash_env "$SERVER_ENV_FILE")
-NEW_CLIENT_ENV_HASH=$(hash_env "$CLIENT_ENV_FILE")
-
-if [ "$OLD_COMMIT" = "$NEW_COMMIT" ] &&
-   [ "$OLD_SERVER_ENV_HASH" = "$NEW_SERVER_ENV_HASH" ] &&
-   [ "$OLD_CLIENT_ENV_HASH" = "$NEW_CLIENT_ENV_HASH" ]; then
-    echo "========== No code or env changes detected =========="
-    exit 0
-fi
-
-CHANGED_FILES=$(git diff --name-only "$OLD_COMMIT" "$NEW_COMMIT")
-
-SERVER_CODE_CHANGED=false
-CLIENT_CODE_CHANGED=false
-SERVER_DEPS_CHANGED=false
-CLIENT_DEPS_CHANGED=false
-
-echo "$CHANGED_FILES" | grep -q "^server/" && SERVER_CODE_CHANGED=true || true
-echo "$CHANGED_FILES" | grep -q "^client/" && CLIENT_CODE_CHANGED=true || true
-
-echo "$CHANGED_FILES" | grep -qE "^server/package(-lock)?\.json" && SERVER_DEPS_CHANGED=true || true
-echo "$CHANGED_FILES" | grep -qE "^client/package(-lock)?\.json" && CLIENT_DEPS_CHANGED=true || true
-
-if [ "$OLD_SERVER_ENV_HASH" != "$NEW_SERVER_ENV_HASH" ]; then
-    SERVER_CODE_CHANGED=true
-fi
-
-if [ "$OLD_CLIENT_ENV_HASH" != "$NEW_CLIENT_ENV_HASH" ]; then
-    CLIENT_CODE_CHANGED=true
-fi
-
-# Backend
-
-
-if [ "$SERVER_CODE_CHANGED" = true ]; then
-
-    cd "$SERVER_DIR"
-
-    if [ "$SERVER_DEPS_CHANGED" = true ]; then
-        echo "========== Installing backend dependencies =========="
-        npm ci
-    else
-        echo "========== Backend dependencies unchanged =========="
-    fi
-
-    echo "========== Restarting backend =========="
-    pm2 restart server --update-env
-
-else
-
-    echo "========== Backend unchanged =========="
-
-fi
-
-# Frontend
-
-if [ "$CLIENT_CODE_CHANGED" = true ]; then
-
-    cd "$CLIENT_DIR"
-
-    if [ "$CLIENT_DEPS_CHANGED" = true ]; then
-        echo "========== Installing frontend dependencies =========="
-        npm ci
-    else
-        echo "========== Frontend dependencies unchanged =========="
-    fi
-
-    echo "========== Building Next.js =========="
-    npm run build
-
-    echo "========== Restarting frontend =========="
-    pm2 restart frontend --update-env
-
-else
-
-    echo "========== Frontend unchanged =========="
-
-fi
-
-echo "========== Deployment Successful =========="
+          script: |
+            cd /home/ubuntu/syranx
+            chmod +x deploy.sh
+            ./deploy.sh
