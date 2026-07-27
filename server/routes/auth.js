@@ -44,6 +44,11 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     logger.info("Login attempted");
 
+    if (!email || !password) {
+      logger.warn("Login failed: missing email or password");
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       logger.warn("Login failed: unknown email");

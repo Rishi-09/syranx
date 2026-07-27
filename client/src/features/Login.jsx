@@ -10,7 +10,7 @@ import AuthInput from "../components/ui/AuthInput.jsx";
 import logo from "../assets/logo.png";
 
 function Login() {
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { setUser } = useContext(Mycontext);
   const router = useRouter();
@@ -22,7 +22,7 @@ function Login() {
 
   const login = async () => {
     setLoading(true);
-    setError(false);
+    setError("");
 
     try {
       let res = await api.post("/login", formData);
@@ -35,9 +35,14 @@ function Login() {
       toast.success("Logged in successfully!", { theme: "dark" });
 
       router.push("/");
-    } catch {
-      setError(true);
-      toast.error("Invalid credentials!", { theme: "dark" });
+    } catch (err) {
+      const message = err.response?.data?.error
+        || (err.response
+          ? "Something went wrong. Please try again."
+          : "Unable to reach the server. Check your connection.");
+
+      setError(message);
+      toast.error(message, { theme: "dark" });
     }
 
     setLoading(false);
@@ -72,7 +77,7 @@ function Login() {
         {error && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
             <i className="fa-solid fa-circle-exclamation" />
-            Invalid email or password
+            {error}
           </div>
         )}
 
